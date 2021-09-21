@@ -138,8 +138,13 @@ def enable_floating(c) :
     if c.name == "Shutdown Prompt":
         c.cmd_enable_floating()
 
+def switch_workspaces(c):
+    if c.name.endswith("Mozilla Firefox"):
+        c.togroup('WWW', switch_group=True)
+
 subscribe.client_new(change_window_names)
 subscribe.client_new(enable_floating)
+subscribe.client_new(switch_workspaces)
 subscribe.client_name_updated(change_window_names)
 
 for i in range(len(groups)):
@@ -215,7 +220,7 @@ screens = [
                     configured_keyboards=['us', 'gr'],
                     **widget_defaults, background=colors[3]
                 ),
-                widget.Image(filename='~/.config/qtile/icons/black_left_right.png', padding=0, margin=0),
+                widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
                 widget.TextBox(
                     text='↻', padding=2, fontsize=16,
                     foreground=colors[2], background=colors[4]
