@@ -12,6 +12,9 @@ shopt -s autocd
 
 # dotfile git alias
 alias config='/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME'
+# When first cloning / initialising dotfile,  run the following commands :
+# config config --local status.showUntrackedFiles no
+# config config --global credential.helper store
 
 # Terminal prompt
 PS1="\[\033[31m\][\W]\[\033[32m\]> \[\033[37m\]"
