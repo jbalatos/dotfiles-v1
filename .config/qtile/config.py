@@ -167,7 +167,7 @@ layout_settings = {'border_focus': colors[3], 'border_width': 1, 'margin': 8}
 
 layouts = [
     layout.MonadTall(**layout_settings),
-    layout.Columns(num_columns=2, insert_position=1, **layout_settings),
+    layout.Columns(num_columns=2, insert_position=1, split=False, **layout_settings),
     layout.Floating(**layout_settings),
     layout.Max(**layout_settings),
 ]
