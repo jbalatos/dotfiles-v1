@@ -135,7 +135,7 @@ def change_window_names(c):
         c.name = "Mozilla Firefox"
 
 def enable_floating(c) :
-    if c.name == "Shutdown Prompt":
+    if c.name == "Shutdown Prompt" or c.name == "galculator":
         c.cmd_enable_floating()
 
 def switch_workspaces(c):
