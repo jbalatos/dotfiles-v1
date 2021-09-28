@@ -7,6 +7,7 @@
 
 # Terminal aliases
 alias ls='ls --color=auto'
+alias la='ls -a --color=auto'
 alias ..='cd ..'
 shopt -s autocd
 
