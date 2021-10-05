@@ -1,0 +1,4 @@
+bluez
+bluez-utils
+brightnessctl
+network-manager
