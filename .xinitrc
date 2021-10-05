@@ -52,5 +52,5 @@ fi
 xrandr --output Virtual-1 --mode 1440x900
 
 nitrogen --restore &
-xcompmgr -c &
+picom &
 exec qtile start

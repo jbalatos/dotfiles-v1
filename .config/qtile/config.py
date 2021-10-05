@@ -87,10 +87,10 @@ keys = [
         desc="Toggle fullscreen on active window"),
 
     # Set opacity
-    # KeyChord([mod, "control"], "o", [
-        # Key([], "i", lazy.window.up_opacity()),
-        # Key([], "u", lazy.window.down_opacity()),
-    # ], mode="opacity"),
+    KeyChord([mod, "control"], "o", [
+        Key([], "i", lazy.window.up_opacity()),
+        Key([], "u", lazy.window.down_opacity()),
+    ], mode="opacity"),
 
     # Toggle between different layouts as defined below
     Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
@@ -129,7 +129,7 @@ groups = [
 group_keys = 'yuiop'; # positioned by ascending preference
 
 def change_window_names(c):
-    if c.name.startswith("jbalatos@ArchVm"):
+    if c.name.startswith("jbalatos@"):
         c.name = "XTerm"
     elif c.name.endswith("Mozilla Firefox"):
         c.name = "Mozilla Firefox"
@@ -228,19 +228,28 @@ screens = [
                 widget.CheckUpdates(
                     **widget_defaults, background=colors[4],
                     colour_have_updates=colors[2], colour_no_updates=colors[1],
-                    custom_command='checkupdates', display_format='{updates} P',
+                    custom_command='checkupdates', display_format='{updates}',
                     execute=terminal + ' -e sudo pacman -Syu',
-                    no_update_string='0 P |', padding=1
+                    no_update_string='0 |', padding=1
                 ),
                 widget.CheckUpdates(
                     **widget_defaults, background=colors[4], padding=1,
                     colour_have_updates=colors[2], colour_no_updates=colors[1],
-                    custom_command='checkupdates-aur', display_format='{updates} A',
+                    custom_command='checkupdates-aur', display_format='{updates}',
                     execute=terminal + ' -e yay -Syu',
-                    no_update_string='0 A'
+                    no_update_string='0'
                 ),
                 widget.TextBox(text=' ', padding=0, background=colors[4]),
                 widget.Image(filename='~/.config/qtile/icons/red_left_black.png', padding=0, margin=0),
+                widget.Bluetooth(**widget_defaults, background=colors[3]),
+                widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
+                widget.NetGraph(
+                    **widget_defaults,
+                    border_color=colors[4], graph_color=colors[2],
+                    type='line', samples=50, width=50, line_width=2,
+                    format='{down} {up}', background=colors[4],
+                ),
+                widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
                 widget.TextBox(
                     text='♫', padding=0, fontsize=14,
                     foreground=colors[2], background=colors[3]
@@ -255,8 +264,6 @@ screens = [
                     filename='~/.config/qtile/icons/red_left_black.png',
                     padding=0, margin=0,
                 ),
-                # widget.TextBox(text='  ', **widget_defaults, background=colors[3]),
-# Power symbol
                 widget.TextBox(
                     mouse_callbacks={'Button1': handle_power_click},
                     text=u"\u23FB" + " ", fontsize=20,

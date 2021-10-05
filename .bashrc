@@ -10,6 +10,9 @@ alias ls='ls --color=auto'
 alias la='ls -a --color=auto'
 alias ..='cd ..'
 shopt -s autocd
+alias opacity='picom-trans -c 95'
+alias no_opacity='picom-trans -c 100'
+alias xterm_tabbed='tabbed xterm -into'
 
 # dotfile git alias
 alias config='/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME'

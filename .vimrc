@@ -1,4 +1,4 @@
-" EXTRA FEATURES
+
 	" [x] compile
 	" [x] statusline
 	" [x] comments (not necessary at last)
@@ -47,6 +47,8 @@ set path=/usr/include,$PWD/**
 set wildignore+=**/node_modules/**
 
 set omnifunc=syntaxcomplete#Complete
+set completeopt=menuone,longest
+set shortmess+=c
 
 " PLUGINS
 call plug#begin()
