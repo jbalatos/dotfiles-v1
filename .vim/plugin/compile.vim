@@ -1,3 +1,8 @@
+if exists("loaded_compile")
+	finish
+endif
+let g:loaded_compile=1
+
 nnoremap <F12> :make<CR>
 
 autocmd BufEnter *.cpp :set makeprg=g++\ %\ \-o\ %:r

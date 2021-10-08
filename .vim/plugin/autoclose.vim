@@ -1,3 +1,8 @@
+if exists("loaded_autoclose")
+	finish
+endif
+let g:loaded_autoclose=1
+
 " General autoclose rules (with/without space)
 inoremap ' ''<left>
 inoremap ` ``<left>
@@ -14,6 +19,14 @@ inoremap "<space> "  "<left><left>
 inoremap (<space> (  )<left><left>
 inoremap [<space> [  ]<left><left>
 inoremap {<space> {  }<left><left>
+
+" Autoclose with exceeding semicolon
+inoremap ';<Tab> '';<left><left>
+inoremap `;<Tab> ``;<left><left>
+inoremap ";<Tab> "";<left><left>
+inoremap (;<Tab> ();<left><left>
+inoremap [;<Tab> [];<left><left>
+inoremap {;<Tab> {};<left><left>
 
 " Autoclose without writing inside
 inoremap '<Tab> ''

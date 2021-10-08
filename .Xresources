@@ -7,7 +7,7 @@ XTerm.vt100.translations: #override \n\
 	Alt <Key>-: smaller-vt-font() \n\
 	Alt <Key>Return: spawn-new-terminal()
 
-XTerm.vt100.faceName: Ubuntu Mono:size=14:antialias=true
+XTerm.vt100.faceName: Ubuntu Mono:size=12:antialias=true
 
 XTerm.vt100.locale: false
 XTerm.vt100.utf8: true
