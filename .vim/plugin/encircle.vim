@@ -45,15 +45,44 @@ function! ChangeEncircle()
 	let new_st = input("Select symbol to be inserted: ")
 	let new_end = SymbolEnding(new_st)
 
-	execute "normal! F" . old_st . "xi" . new_st
-	execute "normal! f" . old_end . "xi" . new_end
+	let @/ = old_st
+	normal! N
+	let i=0
+	while i<len(old_st)
+		normal! x
+		let i += 1
+	endwhile
+	execute "normal! i" . new_st
+
+	let @/ = old_end
+	normal! n
+	let i=0
+	while i<len(old_end)
+		normal! x
+		let i += 1
+	endwhile
+	execute "normal! i" . new_end
 endfunction
 
 function! DeleteEncircle()
 	let start_str = input('Select encircle symbols: ')
 	let end_str = SymbolEnding(start_str)
 
-	execute "normal! F" . start_str . "xf" . end_str . "x"
+	let @/ = start_str
+	normal! N
+	let i=0
+	while i<len(start_str)
+		normal! x
+		let i += 1
+	endwhile
+
+	let @/ = end_str
+	normal! n
+	let i=0
+	while i<len(end_str)
+		normal! x
+		let i += 1
+	endwhile
 endfunction
 
 function! SpacedEncircle(...)
@@ -66,8 +95,28 @@ function! SpacedEncircle(...)
 	endif
 
 	execute "normal! `" . st . "my`" . end . "mz"
-	execute "normal! `za "
-	execute "normal! `yi "
+	normal! `za 
+	normal! `yi 
+endfunction
+
+function! LinedEncircle()
+	let start_str = input('Select encircle symbols: ')
+	let end_str = SymbolEnding(start_str)
+
+	let @/ = start_str
+	normal! N
+	if len(start_str) > 1
+		normal! e
+	endif
+	normal! a 
+
+	let @/ = end_str
+	normal! n
+	if len(end_str) > 1
+		normal! e
+	endif
+	normal! a 
+
 endfunction
 
 nnoremap <leader>ae :set opfunc=AddEncircle<CR>g@

@@ -7,6 +7,10 @@ function! ToIndentEnd()
 	let ln = line('.')
 	let indent_level = indent(ln)
 
+	if indent_level == 0
+		return
+	endif
+
 	let i = ln
 	while ( indent(i) >= indent_level || len(getline(i)) == 0 ) && i != line('$')
 		let i += 1
@@ -31,18 +35,30 @@ function! ToIndentStart()
 	endif
 endfunction
 
-function! SelectIndentation()
+function! SelectIndentation(isAround)
 	if len( getline(line('.')) ) == 0
 		return
 	endif
 
 	call ToIndentStart()
-	normal! 0v
+	if a:isAround == 1
+		normal! k0vj
+	else
+		normal! 0v
+	endif
+
 	call ToIndentEnd()
-	normal! $
+	if a:isAround == 1
+		normal! j$
+	else
+		normal! $
+	endif
 endfunction
 
-onoremap ii :<C-U>call SelectIndentation()<CR>
+onoremap ii :<C-U>call SelectIndentation(0)<CR>
+onoremap ai :<C-U>call SelectIndentation(1)<CR>
+onoremap <leader>[ :<C-U>call ToIndentStart()<CR>
+onoremap <leader>] :<C-U>call ToIndentEnd()<CR>
 
 nnoremap <leader>[ :call ToIndentStart()<CR>
 nnoremap <leader>] :call ToIndentEnd()<CR>
