@@ -2,3 +2,5 @@ bluez
 bluez-utils
 brightnessctl
 network-manager
+nm-connection-eitor
+blueberry
