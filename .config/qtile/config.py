@@ -32,6 +32,7 @@ from libqtile.lazy import lazy
 from libqtile.hook import subscribe
 
 mod = "mod4"
+terminal_tabbed = "tabbed xterm -into"
 terminal = "xterm"
 browser = "firefox"
 prompt = "dmenu_run -h 25"
@@ -98,6 +99,7 @@ keys = [
 
     # Launching apps (Firefox, dmenu, terminal, ranger)
     Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
+    Key([mod, "shift"], "Return", lazy.spawn(terminal_tabbed), desc="Launch terminal with tabbed"),
     Key([mod], "r", lazy.spawn(prompt),
         desc="Spawn a command using a prompt widget"),
     Key([mod], "b", lazy.spawn(browser), desc="Open Browser"),
@@ -128,6 +130,8 @@ groups = [
 
 group_keys = 'yuiop'; # positioned by ascending preference
 
+floating_names = ["Shutdown Prompt", "galculator", "Network Manager", "Bluetooth"]
+
 def change_window_names(c):
     if c.name.startswith("jbalatos@"):
         c.name = "XTerm"
@@ -135,7 +139,7 @@ def change_window_names(c):
         c.name = "Mozilla Firefox"
 
 def enable_floating(c) :
-    if c.name == "Shutdown Prompt" or c.name == "galculator":
+    if c.name in floating_names:
         c.cmd_enable_floating()
 
 def switch_workspaces(c):
@@ -184,6 +188,20 @@ def handle_power_click() :
         '-T', 'Shutdown Prompt', '-e', shutdown_cmd
     ])
 
+def handle_net_click() :
+    qtile.cmd_spawn([
+        terminal, '-bg', colors[3],
+        '-T', 'Network Manager', '-e', 'nmtui'
+    ])
+
+
+def handle_bt_click() :
+    qtile.cmd_spawn([
+        terminal, '-bg', colors[3],
+        '-T', 'Bluetooth', '-e', 'bluetoothctl'
+    ])
+
+
 screens = [
     Screen(
         top=bar.Bar(
@@ -202,6 +220,7 @@ screens = [
                 widget.Image(filename='~/.config/qtile/icons/red_right_black.png'),
                 widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]),
 
+                widget.Systray(),
                 widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
                 widget.TextBox(
                     text='☵', padding=0, fontsize=16,
@@ -241,13 +260,17 @@ screens = [
                 ),
                 widget.TextBox(text=' ', padding=0, background=colors[4]),
                 widget.Image(filename='~/.config/qtile/icons/red_left_black.png', padding=0, margin=0),
-                widget.Bluetooth(**widget_defaults, background=colors[3]),
+                widget.Bluetooth(
+                    **widget_defaults, background=colors[3],
+                    mouse_callbacks={'Button1': handle_bt_click},
+                ),
                 widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
                 widget.NetGraph(
                     **widget_defaults,
                     border_color=colors[4], graph_color=colors[2],
                     type='line', samples=50, width=50, line_width=2,
                     format='{down} {up}', background=colors[4],
+                    mouse_callbacks={'Button1': handle_net_click},
                 ),
                 widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
                 widget.TextBox(
