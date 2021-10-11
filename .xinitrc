@@ -53,4 +53,5 @@ xrandr --output Virtual-1 --mode 1440x900
 
 nitrogen --restore &
 picom &
+lxsession &
 exec qtile start
