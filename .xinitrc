@@ -54,4 +54,5 @@ xrandr --output Virtual-1 --mode 1440x900
 nitrogen --restore &
 picom &
 lxsession &
+dunst -transparency 95 -dmenu /usr/bin/dmenu -browser /usr/bin/firefox &
 exec qtile start
