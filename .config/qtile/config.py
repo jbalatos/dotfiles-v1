@@ -98,8 +98,8 @@ keys = [
     Key([mod, "shift"], "Tab", lazy.prev_layout(), desc="Toggle between layouts"),
 
     # Launching apps (Firefox, dmenu, terminal, ranger)
-    Key([mod], "Return", lazy.spawn(terminal), desc="Launch terminal"),
-    Key([mod, "shift"], "Return", lazy.spawn(terminal_tabbed), desc="Launch terminal with tabbed"),
+    Key([mod], "Return", lazy.spawn(terminal_tabbed), desc="Launch terminal"),
+    Key([mod, "shift"], "Return", lazy.spawn(terminal), desc="Launch bare terminal"),
     Key([mod], "r", lazy.spawn(prompt),
         desc="Spawn a command using a prompt widget"),
     Key([mod], "b", lazy.spawn(browser), desc="Open Browser"),
