@@ -5,7 +5,7 @@ let g:loaded_compile=1
 
 nnoremap <F12> :make<CR>
 
-autocmd BufEnter *.cpp :set makeprg=g++\ %\ \-o\ %:r
+autocmd BufEnter *.cpp :set makeprg=g++\ %\ \-o\ %:r\ \-DLOCAL
 autocmd BufEnter *.cpp :command! Run w <bar> !./%:r
 autocmd BufEnter *.cpp :nnoremap <F12> :w <bar> make <bar>Run<CR>
 "autocmd BufEnter *.cpp :set errorformat=
