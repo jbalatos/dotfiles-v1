@@ -104,6 +104,7 @@ keys = [
         desc="Spawn a command using a prompt widget"),
     Key([mod], "b", lazy.spawn(browser), desc="Open Browser"),
     Key([mod], "f", lazy.spawn(file_manager), desc="Open File Manager"),
+    Key([mod], "a", lazy.spawn("jgmenu_run"), desc="Open jgmenu"),
 
     # Kill window,  restart and close qtile
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
@@ -145,6 +146,8 @@ def enable_floating(c) :
 def switch_workspaces(c):
     if c.name.endswith("Mozilla Firefox"):
         c.togroup('WWW', switch_group=True)
+    elif c.name == 'Spotify':
+        c.togroup('MUS', switch_group=True)
 
 subscribe.client_new(change_window_names)
 subscribe.client_new(enable_floating)
@@ -196,10 +199,7 @@ def handle_net_click() :
 
 
 def handle_bt_click() :
-    qtile.cmd_spawn([
-        terminal, '-bg', colors[3],
-        '-T', 'Bluetooth', '-e', 'bluetoothctl'
-    ])
+    qtile.cmd_spawn(["blueberry"])
 
 
 screens = [
@@ -220,7 +220,7 @@ screens = [
                 widget.Image(filename='~/.config/qtile/icons/red_right_black.png'),
                 widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]),
 
-                widget.Systray(),
+                widget.Systray(**widget_defaults, background=colors[0]),
                 widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
                 widget.TextBox(
                     text='☵', padding=0, fontsize=16,
@@ -261,6 +261,7 @@ screens = [
                 widget.TextBox(text=' ', padding=0, background=colors[4]),
                 widget.Image(filename='~/.config/qtile/icons/red_left_black.png', padding=0, margin=0),
                 widget.Bluetooth(
+                    hci='/dev_F3_08_2A_5A_3E_1B',
                     **widget_defaults, background=colors[3],
                     mouse_callbacks={'Button1': handle_bt_click},
                 ),
