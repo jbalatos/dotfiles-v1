@@ -24,5 +24,12 @@ typedef vector<vector<int> > adjlist;
 // }}}
 
 int main () {
+
+#ifdef LOCAL/*{{{*/
+	freopen("", "r", stdin);
+	freopen("", "w", stdout);
+#endif/*}}}*/
+
+	return 0;
 }
 
