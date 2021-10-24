@@ -30,12 +30,18 @@ function! AddEncircle(...)
 	let end_str = SymbolEnding(start_str)
 
 	execute "normal! `" . st . "my`" . end . "mz"
-	if a:1 == 'char'
+	if a:0
+		if a:1 == 'char'
+			execute "normal! `za" . end_str
+			execute "normal! `yi" . start_str
+		elseif a:1 == 'line'
+			execute "normal! `zo" . end_str
+			execute "normal! `yO" . start_str
+		endif
+	else
 		execute "normal! `za" . end_str
-	elseif a:1 == 'line'
-		execute "normal! `zA" . end_str
+		execute "normal! `yi" . start_str
 	endif
-	execute "normal! `yi" . start_str
 endfunction
 
 function! ChangeEncircle()
@@ -61,7 +67,7 @@ function! ChangeEncircle()
 		normal! x
 		let i += 1
 	endwhile
-	execute "normal! i" . new_end
+	execute "normal! a" . new_end
 endfunction
 
 function! DeleteEncircle()

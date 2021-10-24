@@ -14,13 +14,13 @@ function! Comment(...)
 
 	execute "normal! mz"
 	if &ft == 'cpp'
-		execute "'" . st ",'" . end "normal! 0i//"
+		execute "'" . st ",'" . end "normal! I//"
 	elseif &ft == 'vim'
-		execute "'" . st ",'" . end "normal! 0i\""
+		execute "'" . st ",'" . end "normal! I\""
 	elseif &ft == 'sh' || &ft == "python"
-		execute "'" . st ",'" . end "normal! 0i#"
+		execute "'" . st ",'" . end "normal! I#"
 	elseif &ft == 'tex'
-		execute "'" . st ",'" . end "normal! 0i%"
+		execute "'" . st ",'" . end "normal! I%"
 	endif
 	execute "normal! `z"
 endfunction
