@@ -32,16 +32,16 @@ from libqtile.lazy import lazy
 from libqtile.hook import subscribe
 
 mod = "mod4"
-terminal_tabbed = "tabbed xterm -into"
-terminal = "xterm"
+terminal_tabbed = "alacritty"
+terminal = "alacritty"
 browser = "firefox"
-prompt = "dmenu_run -h 25"
+prompt = "dmenu_run -h 28"
 file_manager = "pcmanfm"
-shutdown_cmd = "~/.config/qtile/gentle_shutdown"
+shutdown_cmd = "lxsession-logout"
 
 colors = ['#282828', '#a89984', '#ebdbb2', '#fb4934', '#282828']
 
-keys = [
+keys = [# {{{
     # Switch between windows
     Key([mod], "h", lazy.layout.left(), desc="Move focus to left"),
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
@@ -119,23 +119,32 @@ keys = [
     Key([], "XF86AudioMute", lazy.spawn("amixer -q set Master toggle")),
     Key([], "XF86AudioLowerVolume", lazy.spawn("amixer -c 0 sset Master 1- unmute")),
     Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer -c 0 sset Master 1+ unmute")),
-]
 
-groups = [
+    # Print Screen
+    Key([], "Print", lazy.spawn("flameshot full -p /home/jbalatos/Pictures")),
+    Key(["control"], "Print", lazy.spawn("flameshot gui")),
+
+    # Brightness
+    Key([], "XF86MonBrightnessUp", lazy.spwan("brightnessctl set 10%+")),
+    Key([], "XF86MonBrightnessDown", lazy.spwan("brightnessctl set 10%-")),
+]# }}}
+
+groups = [# {{{
     Group('DEV'),
     Group('WWW'),
     Group('PDF'),
     Group('MUS'),
     Group('MISC'),
-]
+]# }}}
 
 group_keys = 'yuiop'; # positioned by ascending preference
 
 floating_names = ["Shutdown Prompt", "galculator", "Network Manager", "Bluetooth"]
 
+# Event handlers (subscribe){{{
 def change_window_names(c):
     if c.name.startswith("jbalatos@"):
-        c.name = "XTerm"
+        c.name = "Alacritty"
     elif c.name.endswith("Mozilla Firefox"):
         c.name = "Mozilla Firefox"
 
@@ -146,15 +155,15 @@ def enable_floating(c) :
 def switch_workspaces(c):
     if c.name.endswith("Mozilla Firefox"):
         c.togroup('WWW', switch_group=True)
-    elif c.name == 'Spotify':
+    if c.name.startswith('Spotify') or c.name.endswith('Spotify'):
         c.togroup('MUS', switch_group=True)
 
 subscribe.client_new(change_window_names)
 subscribe.client_new(enable_floating)
 subscribe.client_new(switch_workspaces)
-subscribe.client_name_updated(change_window_names)
+subscribe.client_name_updated(change_window_names)# }}}
 
-for i in range(len(groups)):
+for i in range(len(groups)):# {{{
     group_len = len(groups)
     keys.extend([
         # mod1 + letter of group = switch to group
@@ -168,153 +177,163 @@ for i in range(len(groups)):
         # # mod1 + shift + letter of group = move focused window to group
         # Key([mod, "shift"], i.name, lazy.window.togroup(i.name),
         #     desc="move focused window to group {}".format(i.name)),
-    ])
+    ])# }}}
 
-layout_settings = {'border_focus': colors[3], 'border_width': 1, 'margin': 8}
+layout_settings = {'border_focus': colors[3], 'border_width': 2, 'margin': 8}
 
-layouts = [
+layouts = [# {{{
     layout.MonadTall(**layout_settings),
     layout.Columns(num_columns=2, insert_position=1, split=False, **layout_settings),
     layout.Floating(**layout_settings),
     layout.Max(**layout_settings),
-]
+]# }}}
 
-widget_defaults = {
+widget_defaults = {# {{{
     'font': 'Ubuntu Bold Nerd Font',
-    'fontsize': 14,
+    'fontsize': 16,
     'foreground': colors[2],
-}
+}# }}}
 
+# Widget click handlers{{{
 def handle_power_click() :
-    qtile.cmd_spawn([
-        terminal, '-bg', colors[3],
-        '-T', 'Shutdown Prompt', '-e', shutdown_cmd
-    ])
+    qtile.cmd_spawn(shutdown_cmd)
 
-def handle_net_click() :
-    qtile.cmd_spawn([
-        terminal, '-bg', colors[3],
-        '-T', 'Network Manager', '-e', 'nmtui'
-    ])
+#def handle_net_click() :
+#    qtile.cmd_spawn([""])
 
 
 def handle_bt_click() :
-    qtile.cmd_spawn(["blueberry"])
+    qtile.cmd_spawn(["blueberry"])# }}}
+
+widget_init_list = [# {{{
+    #Widget 1
+    widget.Chord(**widget_defaults, background=colors[0],),
+    widget.GroupBox(
+        padding=2,
+        background=colors[3],
+        hightlight_method='block',
+        inactive=colors[0],
+        active=colors[2],
+        this_current_screen_border = colors[0],
+        borderwidth=2,
+        **widget_defaults,
+    ),
+    widget.Image(filename='~/.config/qtile/icons/red_right_black.png'),
+    widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]),
+    widget.Systray(**widget_defaults, background=colors[0]),
+    #Widget 6
+    widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
+    widget.TextBox(
+        text='☵', padding=0, fontsize=widget_defaults['fontsize'] + 2,
+        foreground=colors[2], background=colors[3]
+    ),
+    widget.CurrentLayout(
+        **widget_defaults, padding=2, background=colors[3]
+    ),
+    widget.Image(filename='~/.config/qtile/icons/black_left_red.png', padding=0, margin=0),
+    widget.Clock(
+        format='%d/%m/%Y | %a %H:%M',
+        **widget_defaults, background=colors[4]
+    ),
+    #Widget 11
+    widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
+    widget.KeyboardLayout(
+        configured_keyboards=['us', 'gr'],
+        **widget_defaults, background=colors[3]
+    ),
+    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
+    widget.TextBox(
+        text='↻', padding=2, fontsize=widget_defaults['fontsize'] + 2,
+        foreground=colors[2], background=colors[4]
+    ),
+    widget.CheckUpdates(
+        **widget_defaults, background=colors[4],
+        colour_have_updates=colors[2], colour_no_updates=colors[1],
+        custom_command='checkupdates', display_format='{updates}',
+        execute=terminal + ' -e sudo pacman -Syu',
+        no_update_string='0 |', padding=1
+    ),
+    #Widget 16
+    widget.CheckUpdates(
+        **widget_defaults, background=colors[4], padding=1,
+        colour_have_updates=colors[2], colour_no_updates=colors[1],
+        custom_command='checkupdates-aur', display_format='{updates}',
+        execute=terminal + ' -e yay -Syu',
+        no_update_string='0'
+    ),
+    widget.TextBox(text=' ', padding=0, background=colors[4]),
+    widget.Image(filename='~/.config/qtile/icons/red_left_black.png', padding=0, margin=0),
+    widget.Bluetooth(
+        hci='/dev_F3_08_2A_5A_3E_1B',
+        **widget_defaults, background=colors[3],
+        mouse_callbacks={'Button1': handle_bt_click},
+    ),
+    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
+    #Widget 21
+    widget.NetGraph(
+        **widget_defaults,
+        border_color=colors[4], graph_color=colors[2],
+        type='line', samples=50, width=50, line_width=2,
+        format='{down} {up}', background=colors[4],
+#            mouse_callbacks={'Button1': handle_net_click},
+    ),
+    widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
+    widget.TextBox(
+        text='♫', padding=0, fontsize=widget_defaults['fontsize'],
+        foreground=colors[2], background=colors[3]
+    ),
+    widget.Volume(**widget_defaults, background=colors[3]),
+    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
+    #Widget 26
+    widget.Battery(
+        format='{char} {percent:0.0%}', charge_char='↑',
+        discharge_char='↓', **widget_defaults, background=colors[4]
+    ),
+    widget.Image(
+        filename='~/.config/qtile/icons/red_left_black.png',
+        padding=0, margin=0,
+    ),
+    widget.TextBox(
+        mouse_callbacks={'Button1': handle_power_click},
+        text=u"\u23FB" + " ", fontsize=widget_defaults['fontsize'] + 6,
+        background=colors[3], 
+    ),
+]# }}}
+
+primary_indexes = []
+
+def init_widget_bar(isPrimary):
+    widget_list = []
+    for i in range(0, len(widget_init_list)):
+        if ( i == 3 ): # WindowName
+            widget_list.append( widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]) )
+        elif ( isPrimary == True or (not i in primary_indexes) ):
+#        if ( isPrimary == True or (not i in primary_indexes) ):
+            widget_list.append( widget_init_list[i] )
+    return bar.Bar( widgets=widget_list, opacity=1.0, size=28 )
 
 
 screens = [
-    Screen(
-        top=bar.Bar(
-            [
-                widget.Chord(**widget_defaults, background=colors[0],),
-                widget.GroupBox(
-                    padding=2,
-                    background=colors[3],
-                    hightlight_method='block',
-                    inactive=colors[0],
-                    active=colors[2],
-                    this_current_screen_border = colors[0],
-                    borderwidth=2,
-                    **widget_defaults,
-                ),
-                widget.Image(filename='~/.config/qtile/icons/red_right_black.png'),
-                widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]),
-
-                widget.Systray(**widget_defaults, background=colors[0]),
-                widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
-                widget.TextBox(
-                    text='☵', padding=0, fontsize=16,
-                    foreground=colors[2], background=colors[3]
-                ),
-                widget.CurrentLayout(
-                    **widget_defaults, padding=2, background=colors[3]
-                ),
-                widget.Image(filename='~/.config/qtile/icons/black_left_red.png', padding=0, margin=0),
-                widget.Clock(
-                    format='%d/%m/%Y | %a %H:%M',
-                    **widget_defaults, background=colors[4]
-                ),
-                widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
-                widget.KeyboardLayout(
-                    configured_keyboards=['us', 'gr'],
-                    **widget_defaults, background=colors[3]
-                ),
-                widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
-                widget.TextBox(
-                    text='↻', padding=2, fontsize=16,
-                    foreground=colors[2], background=colors[4]
-                ),
-                widget.CheckUpdates(
-                    **widget_defaults, background=colors[4],
-                    colour_have_updates=colors[2], colour_no_updates=colors[1],
-                    custom_command='checkupdates', display_format='{updates}',
-                    execute=terminal + ' -e sudo pacman -Syu',
-                    no_update_string='0 |', padding=1
-                ),
-                widget.CheckUpdates(
-                    **widget_defaults, background=colors[4], padding=1,
-                    colour_have_updates=colors[2], colour_no_updates=colors[1],
-                    custom_command='checkupdates-aur', display_format='{updates}',
-                    execute=terminal + ' -e yay -Syu',
-                    no_update_string='0'
-                ),
-                widget.TextBox(text=' ', padding=0, background=colors[4]),
-                widget.Image(filename='~/.config/qtile/icons/red_left_black.png', padding=0, margin=0),
-                widget.Bluetooth(
-                    hci='/dev_F3_08_2A_5A_3E_1B',
-                    **widget_defaults, background=colors[3],
-                    mouse_callbacks={'Button1': handle_bt_click},
-                ),
-                widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
-                widget.NetGraph(
-                    **widget_defaults,
-                    border_color=colors[4], graph_color=colors[2],
-                    type='line', samples=50, width=50, line_width=2,
-                    format='{down} {up}', background=colors[4],
-                    mouse_callbacks={'Button1': handle_net_click},
-                ),
-                widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
-                widget.TextBox(
-                    text='♫', padding=0, fontsize=14,
-                    foreground=colors[2], background=colors[3]
-                ),
-                widget.Volume(**widget_defaults, background=colors[3]),
-                widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
-                widget.Battery(
-                    format='{char} {percent:0.0%}', charge_char='↑',
-                    discharge_char='↓', **widget_defaults, background=colors[4]
-                ),
-                widget.Image(
-                    filename='~/.config/qtile/icons/red_left_black.png',
-                    padding=0, margin=0,
-                ),
-                widget.TextBox(
-                    mouse_callbacks={'Button1': handle_power_click},
-                    text=u"\u23FB" + " ", fontsize=20,
-                    background=colors[3], 
-                ),
-            ],
-            25,
-        ),
-    ),
+        Screen( top=init_widget_bar(isPrimary=True) ),
+        Screen( top=init_widget_bar(isPrimary=False) ),
 ]
 
 # Drag floating layouts.
-mouse = [
+mouse = [# {{{
     Drag([mod], "Button1", lazy.window.set_position_floating(),
          start=lazy.window.get_position()),
     Drag([mod], "Button3", lazy.window.set_size_floating(),
          start=lazy.window.get_size()),
     Click([mod], "Button2", lazy.window.bring_to_front()),
     Click([mod], "Button1", lazy.window.toggle_floating())
-]
+]# }}}
 
 dgroups_key_binder = None
 dgroups_app_rules = []  # type: List
 follow_mouse_focus = True
 bring_front_click = False
 cursor_warp = False
-floating_layout = layout.Floating(float_rules=[
+floating_layout = layout.Floating(float_rules=[# {{{
     # Run the utility of `xprop` to see the wm class and name of an X client.
     *layout.Floating.default_float_rules,
     Match(wm_class='confirmreset'),  # gitk
@@ -323,7 +342,7 @@ floating_layout = layout.Floating(float_rules=[
     Match(wm_class='ssh-askpass'),  # ssh-askpass
     Match(title='branchdialog'),  # gitk
     Match(title='pinentry'),  # GPG key password entry
-])
+])# }}}
 auto_fullscreen = True
 focus_on_window_activation = "smart"
 reconfigure_screens = True
