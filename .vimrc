@@ -68,7 +68,13 @@ let g:netrw_banner = 0
 let g:netrw_browse_split = 4
 let g:netrw_winsize = 20
 
-inoremap <S-Tab> <End>
+function! GoToDefinitions()
+	let @/ = 'int\ main'
+	normal! ggn2k
+endfunction
+nnoremap <leader>gd :call GoToDefinitions()<CR>
+
+inoremap <S-Tab> <right>
 nnoremap <leader>q :qa
 nnoremap <leader>sn :-1read ~/.vim/skeleton.
 
