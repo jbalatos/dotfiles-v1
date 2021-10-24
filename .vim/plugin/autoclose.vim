@@ -20,13 +20,20 @@ inoremap (<space> (  )<left><left>
 inoremap [<space> [  ]<left><left>
 inoremap {<space> {  }<left><left>
 
-" Autoclose with exceeding semicolon
-inoremap ';<Tab> '';<left><left>
-inoremap `;<Tab> ``;<left><left>
-inoremap ";<Tab> "";<left><left>
-inoremap (;<Tab> ();<left><left>
-inoremap [;<Tab> [];<left><left>
-inoremap {;<Tab> {};<left><left>
+" Autoclose with exceeding semicolon (with/without space)
+inoremap '; '';<left><left>
+inoremap `; ``;<left><left>
+inoremap "; "";<left><left>
+inoremap (; ();<left><left>
+inoremap [; [];<left><left>
+inoremap {; {};<left><left>
+
+inoremap ';<space> '  ';<left><left><left>
+inoremap `;<space> `  `;<left><left><left>
+inoremap ";<space> "  ";<left><left><left>
+inoremap (;<space> (  );<left><left><left>
+inoremap [;<space> [  ];<left><left><left>
+inoremap {;<space> {  };<left><left><left>
 
 " Autoclose without writing inside
 inoremap '<Tab> ''
