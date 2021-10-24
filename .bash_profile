@@ -3,4 +3,6 @@
 #
 
 [[ -f ~/.bashrc ]] && . ~/.bashrc
-[[ "$(tty)" = "/dev/tty1" ]] && pgrep qtile || startx
+if [ -z "${DISPLAY}" ] && [ "${XDG_VTNR}" -eq 1 ]; then
+  pgrep qtile || startx
+fi
