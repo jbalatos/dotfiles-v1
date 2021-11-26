@@ -9,13 +9,15 @@
 
 set nocompatible
 set wildmenu
-syntax on
 set encoding=utf-8
 set autoindent
 set exrc
 set cursorline
 set noerrorbells
-"set colorcolumn=80
+set mouse=a
+
+syntax on
+filetype plugin on
 
 set noexpandtab
 set shiftwidth=2
@@ -46,10 +48,6 @@ set rnu
 set path=/usr/include,$PWD/**
 set wildignore+=**/node_modules/**
 
-set omnifunc=syntaxcomplete#Complete
-set completeopt=menuone,longest
-set shortmess+=c
-
 " PLUGINS
 call plug#begin()
 Plug 'morhetz/gruvbox'
@@ -68,13 +66,32 @@ let g:netrw_banner = 0
 let g:netrw_browse_split = 4
 let g:netrw_winsize = 20
 
-function! GoToDefinitions()
-	let @/ = 'int\ main'
-	normal! ggn2k
+" AUTOCOMPLETTION
+set tags+=~/.vim/tags/cpp
+set completeopt=menuone,longest
+set shortmess+=c
+
+function! GoToDefinitions()"{{{
+	if &ft == 'cpp' || &ft == 'c'
+		let @/ = 'int\ main'
+		normal! ggn2k
+	elseif &ft == "javascript"
+		let @/ = 'import\|require'
+		normal! ggn
+	endif
 endfunction
+function! GoToMain()
+	if &ft == 'cpp' || &ft == 'c'
+		let @/ = 'int\ main'
+		normal! ggn$
+	endif
+endfunction"}}}
+
 nnoremap <leader>gd :call GoToDefinitions()<CR>
+nnoremap <leader>gm :call GoToMain()<CR>
 
 inoremap <S-Tab> <right>
 nnoremap <leader>q :qa
 nnoremap <leader>sn :-1read ~/.vim/skeleton.
+nnoremap <leader>io :60vs %:r.in<CR>
 
