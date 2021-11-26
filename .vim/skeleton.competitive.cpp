@@ -16,8 +16,8 @@ typedef vector<vector<int> > adjlist;
 #define REV(A) A.rbegin(), A.rend()
 #define pb push_back
 
-#define MAXINT numeric_limits<int>::max()
-#define popcount builtin_popcount
+#define gcd(x, y) __gcd( abs(x), abs(y) )
+#define popcount __builtin_popcount
 #define clz __builtin_clz
 #define ctz __builtin_ctz
 #define NEW new(nothrow)
@@ -25,10 +25,9 @@ typedef vector<vector<int> > adjlist;
 
 int main () {
 
-#ifdef LOCAL/*{{{*/
+#ifdef LOCAL
 	freopen("", "r", stdin);
-	freopen("", "w", stdout);
-#endif/*}}}*/
+#endif
 
 	return 0;
 }
