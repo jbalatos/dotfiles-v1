@@ -135,9 +135,10 @@ groups = [# {{{
     Group('PDF'),
     Group('MUS'),
     Group('MISC'),
+    Group('COMM'),
 ]# }}}
 
-group_keys = 'yuiop'; # positioned by ascending preference
+group_keys = ['y', 'u', 'i', 'o', 'p', 'bracketleft']; # positioned by ascending preference
 
 floating_names = ["Shutdown Prompt", "galculator", "Network Manager", "Bluetooth"]
 
@@ -155,13 +156,20 @@ def enable_floating(c) :
 def switch_workspaces(c):
     if c.name.endswith("Mozilla Firefox"):
         c.togroup('WWW', switch_group=True)
-    if c.name.startswith('Spotify') or c.name.endswith('Spotify'):
-        c.togroup('MUS', switch_group=True)
+
+def set_transparency(c):
+    if c.name.startswith("jbalatos@") or c.name == "Alacritty":
+        c.cmd_opacity(0.9)
+
+def handle_multimonitors():
+   qtile.cmd_spawn("monitors") 
 
 subscribe.client_new(change_window_names)
 subscribe.client_new(enable_floating)
-subscribe.client_new(switch_workspaces)
-subscribe.client_name_updated(change_window_names)# }}}
+#subscribe.client_new(switch_workspaces)
+subscribe.client_new(set_transparency)
+subscribe.client_name_updated(change_window_names)
+subscribe.startup_complete(handle_multimonitors)# }}}
 
 for i in range(len(groups)):# {{{
     group_len = len(groups)
@@ -307,6 +315,8 @@ def init_widget_bar(isPrimary):
     for i in range(0, len(widget_init_list)):
         if ( i == 3 ): # WindowName
             widget_list.append( widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]) )
+        elif i == 7: # CurrentLayout
+            widget_list.append( widget.CurrentLayout( **widget_defaults, padding=2, background=colors[3]) )
         elif ( isPrimary == True or (not i in primary_indexes) ):
 #        if ( isPrimary == True or (not i in primary_indexes) ):
             widget_list.append( widget_init_list[i] )
