@@ -38,6 +38,8 @@ browser = "firefox"
 prompt = "dmenu_run -h 28"
 file_manager = "pcmanfm"
 shutdown_cmd = "lxsession-logout"
+conky_startup = "conky -c ~/.config/conky/conky-startup.conf"
+primary_screen = 0
 
 colors = ['#282828', '#a89984', '#ebdbb2', '#fb4934', '#282828']
 
@@ -47,7 +49,7 @@ keys = [# {{{
     Key([mod], "l", lazy.layout.right(), desc="Move focus to right"),
     Key([mod], "j", lazy.layout.down(), desc="Move focus down"),
     Key([mod], "k", lazy.layout.up(), desc="Move focus up"),
-    Key(["control"], "space", lazy.layout.next(), desc="Change window"),
+    Key(["mod1"], "Tab", lazy.group.next_window(), desc="Cycle through windows"),
 
     # Move windows between left/right columns or move up/down in current stack.
     # Moving out of range in Columns layout will create new column.
@@ -105,6 +107,8 @@ keys = [# {{{
     Key([mod], "b", lazy.spawn(browser), desc="Open Browser"),
     Key([mod], "f", lazy.spawn(file_manager), desc="Open File Manager"),
     Key([mod], "a", lazy.spawn("jgmenu_run"), desc="Open jgmenu"),
+    Key([mod], "slash", lazy.spawn(conky_startup, shell=True), desc="Open help (w/ cocky)"),
+    Key([mod, "shift"], "slash", lazy.spawn(conky_startup, shell=True), desc="Open help (w/ cocky)"),
 
     # Kill window,  restart and close qtile
     Key([mod], "q", lazy.window.kill(), desc="Kill focused window"),
@@ -115,13 +119,17 @@ keys = [# {{{
     Key([mod], "space", lazy.widget["keyboardlayout"].next_keyboard(),
         desc="Change keyboard layout"),
 
-    # Change between last used groups
-    Key(["mod1"], "Tab", lazy.screen.toggle_group(), desc="Change to previously used group"),
+    # Change between most recently used groups
+    Key(["control"], "space", lazy.screen.toggle_group(), desc="Toggle between recent groups"),
 
     # Sound
-    Key([], "XF86AudioMute", lazy.spawn("amixer -q set Master toggle")),
-    Key([], "XF86AudioLowerVolume", lazy.spawn("amixer -c 0 sset Master 1- unmute")),
-    Key([], "XF86AudioRaiseVolume", lazy.spawn("amixer -c 0 sset Master 1+ unmute")),
+    Key([], "XF86AudioRaiseVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +1000")),
+    Key([], "XF86AudioLowerVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ -1000")),
+    Key([], "XF86AudioMute", lazy.spawn("pactl set-sink-mute @DEFAULT_SINK@ toggle")),
+    Key([], "XF86AudioPlay", lazy.spawn("playerctl play-pause")),
+    Key([], "XF86AudioStop", lazy.spawn("playerctl play-pause")),
+    Key([], "XF86AudioPrev", lazy.spawn("playerctl previous")),
+    Key([], "XF86AudioNext", lazy.spawn("playerctl next")),
 
     # Print Screen
     Key([], "Print", lazy.spawn("flameshot full -p /home/jbalatos/Pictures")),
@@ -143,7 +151,7 @@ groups = [# {{{
 
 group_keys = ['y', 'u', 'i', 'o', 'p', 'bracketleft']; # positioned by ascending preference
 
-floating_names = ["Shutdown Prompt", "galculator", "Network Manager", "Bluetooth"]
+floating_names = ["Shutdown Prompt", "galculator", "Network Manager", "Bluetooth", "Conky"]
 
 # Event handlers (subscribe){{{
 def change_window_names(c):
@@ -161,24 +169,29 @@ def switch_workspaces(c):
         c.togroup('WWW', switch_group=True)
 
 def set_transparency(c):
-    if c.name.startswith("jbalatos@") or c.name == "Alacritty":
+    if c.name.startswith("jbalatos@") or c.name == "Alacritty" or c.name == "Conky":
         c.cmd_opacity(0.9)
 
-def handle_multimonitors():
+def handle_startup():
    qtile.cmd_spawn("monitors") 
+
+def open_startup_conky():
+   qtile.cmd_spawn("killall conky")
+   qtile.cmd_spawn("sleep 2 && " + conky_startup, shell = True)
 
 subscribe.client_new(change_window_names)
 subscribe.client_new(enable_floating)
 #subscribe.client_new(switch_workspaces)
 subscribe.client_new(set_transparency)
 subscribe.client_name_updated(change_window_names)
-subscribe.startup_complete(handle_multimonitors)# }}}
+subscribe.startup_complete(handle_startup)
+subscribe.startup_once(open_startup_conky)# }}}
 
 for i in range(len(groups)):# {{{
     group_len = len(groups)
     keys.extend([
         # mod1 + letter of group = switch to group
-        Key([mod], group_keys[-group_len+i], lazy.group[groups[i].name].toscreen(),
+        Key([mod], group_keys[-group_len+i], lazy.group[groups[i].name].toscreen(toggle=True),
             desc="Switch to group {}".format(groups[i].name)),
 
         # mod1 + shift + letter of group = switch to & move focused window to group
@@ -193,7 +206,7 @@ for i in range(len(groups)):# {{{
 layout_settings = {'border_focus': colors[3], 'border_width': 2, 'margin': 8}
 
 widget_defaults = {# {{{
-    'font': 'Ubuntu Bold Nerd Font',
+    'font': 'UbuntuMono Nerd Font:bold',
     'fontsize': 16,
     'foreground': colors[2],
 }# }}}
@@ -321,14 +334,12 @@ widget_init_list = [# {{{
     ),
     widget.TextBox(
         mouse_callbacks={'Button1': handle_power_click},
-        text=u"\u23FB" + " ", fontsize=widget_defaults['fontsize'] + 6,
+        text=u"\u23FB" + " ", fontsize=widget_defaults['fontsize'] - 2, font=widget_defaults['font'],
         background=colors[3], 
     ),
 ]# }}}
 
-primary_indexes = []
-
-def init_widget_bar(isPrimary):
+def init_widget_bar(screen_idx):
     widget_list = []
     for i in range(0, len(widget_init_list)):
         if (i == 1): #GroupBox
@@ -340,15 +351,16 @@ def init_widget_bar(isPrimary):
             widget_list.append( widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]) )
         elif i == 7: # CurrentLayout
             widget_list.append( widget.CurrentLayout( **widget_defaults, padding=2, background=colors[3]) )
-        elif ( isPrimary == True or (not i in primary_indexes) ):
-#        if ( isPrimary == True or (not i in primary_indexes) ):
+        #elif ( screen_idx == primary_screen ):
+        #if ( screen_idx == primary_screen ):
+        else :
             widget_list.append( widget_init_list[i] )
     return bar.Bar( widgets=widget_list, opacity=1.0, size=28 )
 
 
 screens = [
-        Screen( top=init_widget_bar(isPrimary=True) ),
-        Screen( top=init_widget_bar(isPrimary=False) ),
+        Screen( top=init_widget_bar(0) ),
+        Screen( top=init_widget_bar(1) ),
 ]
 
 # Drag floating layouts.
