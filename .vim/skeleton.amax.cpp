@@ -1,5 +1,5 @@
-// AMAX
-static inline void amax (int &a, int b) {/*{{{*/
+// AMAX {{{
+static inline void amax (int &a, int b) {
 	if (a < b) a = b;
 }
 
