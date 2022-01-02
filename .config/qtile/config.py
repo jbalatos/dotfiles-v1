@@ -115,6 +115,9 @@ keys = [# {{{
     Key([mod], "space", lazy.widget["keyboardlayout"].next_keyboard(),
         desc="Change keyboard layout"),
 
+    # Change between last used groups
+    Key(["mod1"], "Tab", lazy.screen.toggle_group(), desc="Change to previously used group"),
+
     # Sound
     Key([], "XF86AudioMute", lazy.spawn("amixer -q set Master toggle")),
     Key([], "XF86AudioLowerVolume", lazy.spawn("amixer -c 0 sset Master 1- unmute")),
@@ -146,8 +149,8 @@ floating_names = ["Shutdown Prompt", "galculator", "Network Manager", "Bluetooth
 def change_window_names(c):
     if c.name.startswith("jbalatos@"):
         c.name = "Alacritty"
-    elif c.name.endswith("Mozilla Firefox"):
-        c.name = "Mozilla Firefox"
+    #elif c.name.endswith("Mozilla Firefox"):
+        #c.name = "Mozilla Firefox"
 
 def enable_floating(c) :
     if c.name in floating_names:
@@ -189,18 +192,27 @@ for i in range(len(groups)):# {{{
 
 layout_settings = {'border_focus': colors[3], 'border_width': 2, 'margin': 8}
 
-layouts = [# {{{
-    layout.MonadTall(**layout_settings),
-    layout.Columns(num_columns=2, insert_position=1, split=False, **layout_settings),
-    layout.Floating(**layout_settings),
-    layout.Max(**layout_settings),
-]# }}}
-
 widget_defaults = {# {{{
     'font': 'Ubuntu Bold Nerd Font',
     'fontsize': 16,
     'foreground': colors[2],
 }# }}}
+
+layouts = [# {{{
+    layout.MonadTall(**layout_settings,
+        ratio=0.6
+    ),
+    layout.Columns(num_columns=2, insert_position=1, split=False, **layout_settings),
+    layout.Floating(**layout_settings),
+    layout.Max(**layout_settings),
+    layout.TreeTab(**layout_settings,
+        font=widget_defaults['font'], fontsize=widget_defaults['fontsize'],
+        sections = [''],
+        panel_width=200, padding_y=6, previous_on_rm=True,
+        bg_color=colors[0], inactive_bg=colors[4], inactive_fg=colors[2],
+        active_bg=colors[2], active_fg=colors[0]
+    )
+]# }}}
 
 # Widget click handlers{{{
 def handle_power_click() :
@@ -209,12 +221,18 @@ def handle_power_click() :
 #def handle_net_click() :
 #    qtile.cmd_spawn([""])
 
+def handle_menu_click() :
+    qtile.cmd_spawn('jgmenu_run')
 
 def handle_bt_click() :
     qtile.cmd_spawn(["blueberry"])# }}}
 
 widget_init_list = [# {{{
     #Widget 1
+    #widget.TextBox(
+        #**widget_defaults, text='...', background=colors[0],
+        #mouse_callbacks={ 'Button1':  handle_menu_click}
+    #),
     widget.Chord(**widget_defaults, background=colors[0],),
     widget.GroupBox(
         padding=2,
@@ -228,8 +246,8 @@ widget_init_list = [# {{{
     ),
     widget.Image(filename='~/.config/qtile/icons/red_right_black.png'),
     widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]),
-    widget.Systray(**widget_defaults, background=colors[0]),
     #Widget 6
+    widget.Systray(**widget_defaults, background=colors[0]),
     widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
     widget.TextBox(
         text='☵', padding=0, fontsize=widget_defaults['fontsize'] + 2,
@@ -239,11 +257,11 @@ widget_init_list = [# {{{
         **widget_defaults, padding=2, background=colors[3]
     ),
     widget.Image(filename='~/.config/qtile/icons/black_left_red.png', padding=0, margin=0),
+    #Widget 11
     widget.Clock(
         format='%d/%m/%Y | %a %H:%M',
         **widget_defaults, background=colors[4]
     ),
-    #Widget 11
     widget.Image(filename='~/.config/qtile/icons/red_left_black.png'),
     widget.KeyboardLayout(
         configured_keyboards=['us', 'gr'],
@@ -254,6 +272,7 @@ widget_init_list = [# {{{
         text='↻', padding=2, fontsize=widget_defaults['fontsize'] + 2,
         foreground=colors[2], background=colors[4]
     ),
+    #Widget 16
     widget.CheckUpdates(
         **widget_defaults, background=colors[4],
         colour_have_updates=colors[2], colour_no_updates=colors[1],
@@ -261,7 +280,6 @@ widget_init_list = [# {{{
         execute=terminal + ' -e sudo pacman -Syu',
         no_update_string='0 |', padding=1
     ),
-    #Widget 16
     widget.CheckUpdates(
         **widget_defaults, background=colors[4], padding=1,
         colour_have_updates=colors[2], colour_no_updates=colors[1],
@@ -276,8 +294,8 @@ widget_init_list = [# {{{
         **widget_defaults, background=colors[3],
         mouse_callbacks={'Button1': handle_bt_click},
     ),
-    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
     #Widget 21
+    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
     widget.NetGraph(
         **widget_defaults,
         border_color=colors[4], graph_color=colors[2],
@@ -291,8 +309,8 @@ widget_init_list = [# {{{
         foreground=colors[2], background=colors[3]
     ),
     widget.Volume(**widget_defaults, background=colors[3]),
-    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
     #Widget 26
+    widget.Image(filename='~/.config/qtile/icons/black_left_red.png'),
     widget.Battery(
         format='{char} {percent:0.0%}', charge_char='↑',
         discharge_char='↓', **widget_defaults, background=colors[4]
@@ -313,7 +331,12 @@ primary_indexes = []
 def init_widget_bar(isPrimary):
     widget_list = []
     for i in range(0, len(widget_init_list)):
-        if ( i == 3 ): # WindowName
+        if (i == 1): #GroupBox
+            widget_list.append( widget.GroupBox( padding=2, background=colors[3],
+                    hightlight_method='block', inactive=colors[0], active=colors[2],
+                    this_current_screen_border = colors[0], borderwidth=2, **widget_defaults,
+            ))
+        elif ( i == 3 ): # WindowName
             widget_list.append( widget.WindowName(max_chars=20, **widget_defaults, background=colors[0]) )
         elif i == 7: # CurrentLayout
             widget_list.append( widget.CurrentLayout( **widget_defaults, padding=2, background=colors[3]) )
