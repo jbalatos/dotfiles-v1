@@ -13,7 +13,7 @@ function! Comment(...)
 	endif
 
 	execute "normal! mz"
-	if &ft == 'cpp'
+	if &ft == 'cpp' || &ft == "typescriptreact"
 		execute "'" . st ",'" . end "normal! I//"
 	elseif &ft == 'vim'
 		execute "'" . st ",'" . end "normal! I\""
@@ -21,6 +21,9 @@ function! Comment(...)
 		execute "'" . st ",'" . end "normal! I#"
 	elseif &ft == 'tex'
 		execute "'" . st ",'" . end "normal! I%"
+	elseif &ft == 'css'
+		execute "normal! '" . st . "I/*"
+		execute "normal! '" . end . "A*/"
 	endif
 	execute "normal! `z"
 endfunction
@@ -35,7 +38,7 @@ function! Uncomment(...)
 	endif
 
 	execute "normal! mz"
-	if &ft == 'cpp'
+	if &ft == 'cpp' || &ft == "typescriptreact"
 		execute "'" . st . ",'" . end . "s/\\/\\///"
 	elseif &ft == 'vim'
 		execute "'" . st . ",'" . end . "s/\"//"
@@ -43,6 +46,9 @@ function! Uncomment(...)
 		execute "'" . st . ",'" . end . "s/%//"
 	elseif &ft == 'sh' || &ft == "python"
 		execute "'" . st . ",'" . end . "s/#//"
+	elseif &ft == 'css'
+		execute "'" . st ",'" . end . "s/\\/\\*//"
+		execute "'" . st ",'" . end . "s/\\*\\///"
 	endif
 	execute "normal! `z"
 endfunction
