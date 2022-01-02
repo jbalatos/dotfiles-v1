@@ -15,6 +15,7 @@ set exrc
 set cursorline
 set noerrorbells
 set mouse=a
+set showcmd
 
 syntax on
 filetype plugin on
@@ -34,7 +35,7 @@ set undofile
 set undodir=~/.vim/undodir
 
 set list
-set listchars=tab:\|\ ,precedes:<,extends:>
+set listchars=tab:\|\ 
 
 set splitright
 set splitbelow
@@ -93,5 +94,5 @@ nnoremap <leader>gm :call GoToMain()<CR>
 inoremap <S-Tab> <right>
 nnoremap <leader>q :qa
 nnoremap <leader>sn :-1read ~/.vim/skeleton.
-nnoremap <leader>io :60vs %:r.in<CR>
+nnoremap <leader>io :60vs %:r.in <bar> sp %:r.out<CR>
 
