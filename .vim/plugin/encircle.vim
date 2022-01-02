@@ -12,6 +12,8 @@ function! SymbolEnding(start_str)
 		return ']'
 	elseif a:start_str == '<'
 		return '>'
+	elseif a:start_str =~ '<[\w]+>'
+		return substitute( a:start_str, '<', '</', '' ) 
 	else
 		return a:start_str
 	endif
@@ -67,7 +69,7 @@ function! ChangeEncircle()
 		normal! x
 		let i += 1
 	endwhile
-	execute "normal! a" . new_end
+	execute "normal! i" . new_end
 endfunction
 
 function! DeleteEncircle()
