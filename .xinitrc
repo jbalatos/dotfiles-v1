@@ -30,11 +30,8 @@ if [ -d /etc/X11/xinit/xinitrc.d ] ; then
  unset f
 fi
 
-#Set jgmenu theme
-jgmenu_run init --theme=col3
-
 #Open nm-applet
-nm-applet &
+#nm-applet &
 
 # Set trackpad options
 xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Tapping Enabled" 1
@@ -42,10 +39,12 @@ xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Click Method Enabled"
 xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Natural Scrolling Enabled" 1
 
 # Open flameshot
-flameshot &
+#flameshot &
 
-nitrogen --restore &
-picom &
-lxsession &
-dunst -transparency 95 -dmenu /usr/bin/dmenu -browser /usr/bin/firefox &
+#nitrogen --restore &
+#picom &
+#lxsession &
+#dunst -transparency 95 -dmenu /usr/bin/dmenu -browser /usr/bin/firefox &
+
+# Start window manager
 exec qtile start

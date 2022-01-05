@@ -175,9 +175,23 @@ def set_transparency(c):
 def handle_startup():
    qtile.cmd_spawn("monitors") 
 
-def open_startup_conky():
-   qtile.cmd_spawn("killall conky")
+def open_startup_applications():
+   # Conky
+   qtile.cmd_spawn("killall conky", shell = True)
    qtile.cmd_spawn("sleep 2 && " + conky_startup, shell = True)
+   # Flameshot - screenshots
+   qtile.cmd_spawn("flameshot &")
+   # nitrogen - background
+   qtile.cmd_spawn("killall nitrogen", shell = True)
+   qtile.cmd_spawn("sleep 1 && nitrogen --restore &", shell = True)
+   # Picom - compositor
+   qtile.cmd_spawn("sleep 2 && picom &", shell = True)
+   # Lxsession - session manager
+   qtile.cmd_spawn("lxsession &", shell = True)
+   # Dunst - notifications
+   qtile.cmd_spawn("dunst -transparency 95 -dmenu /usr/bin/dmenu -browser /usr/bin/firefox &", shell = True)
+   # Nm-applet - wifi
+   qtile.cmd_spawn("nm-applet &", shell = True)
 
 def bring_to_front(c):
     if (c.floating):
@@ -191,7 +205,7 @@ subscribe.client_new(enable_floating)
 subscribe.client_new(set_transparency)
 subscribe.client_name_updated(change_window_names)
 subscribe.startup_complete(handle_startup)
-subscribe.startup_once(open_startup_conky)# }}}
+subscribe.startup_once(open_startup_applications)# }}}
 
 for i in range(len(groups)):# {{{
     group_len = len(groups)
