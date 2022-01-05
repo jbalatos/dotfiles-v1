@@ -96,12 +96,10 @@ keys = [# {{{
     ], mode="opacity"),
 
     # Toggle between different layouts as defined below
-    Key([mod], "Tab", lazy.next_layout(), desc="Toggle between layouts"),
-    Key([mod, "shift"], "Tab", lazy.prev_layout(), desc="Toggle between layouts"),
+    Key(["control"], "space", lazy.next_layout(), desc="Toggle between layouts"),
 
     # Launching apps (Firefox, dmenu, terminal, ranger)
     Key([mod], "Return", lazy.spawn(terminal_tabbed), desc="Launch terminal"),
-    Key([mod, "shift"], "Return", lazy.spawn(terminal), desc="Launch bare terminal"),
     Key([mod], "r", lazy.spawn(prompt),
         desc="Spawn a command using a prompt widget"),
     Key([mod], "b", lazy.spawn(browser), desc="Open Browser"),
@@ -120,7 +118,7 @@ keys = [# {{{
         desc="Change keyboard layout"),
 
     # Change between most recently used groups
-    Key(["control"], "space", lazy.screen.toggle_group(), desc="Toggle between recent groups"),
+    Key([mod], "Tab", lazy.screen.toggle_group(), desc="Toggle between recent groups"),
 
     # Sound
     Key([], "XF86AudioRaiseVolume", lazy.spawn("pactl set-sink-volume @DEFAULT_SINK@ +1000")),
@@ -167,6 +165,8 @@ def enable_floating(c) :
 def switch_workspaces(c):
     if c.name.endswith("Mozilla Firefox"):
         c.togroup('WWW', switch_group=True)
+    #if c.get_wm_class() == "Evince":
+        #c.togroup('PDF', switch_group=True)
 
 def set_transparency(c):
     if c.name.startswith("jbalatos@") or c.name == "Alacritty" or c.name == "Conky":
@@ -179,6 +179,12 @@ def open_startup_conky():
    qtile.cmd_spawn("killall conky")
    qtile.cmd_spawn("sleep 2 && " + conky_startup, shell = True)
 
+def bring_to_front(c):
+    if (c.floating):
+        c.cmd_bring_to_front()
+
+
+#subscribe.client_focus(bring_to_front)
 subscribe.client_new(change_window_names)
 subscribe.client_new(enable_floating)
 #subscribe.client_new(switch_workspaces)
