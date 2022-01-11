@@ -1,0 +1,80 @@
+Config
+  { font = "xft:UbuntuMono Nerd Font Mono:bold:antialias=true:hinting=true:size=14"
+  , additionalFonts =
+    [ "xft:UbuntuMono Nerd Font Mono:bold:antialias=true:hinting=true:size=18"
+    ]
+
+  , borderColor = "#282828"
+  , bgColor = "#282828"
+  , fgColor = "#ebdbb2"
+  , border = BottomB
+  , borderWidth = 3
+
+  -- , alpha = 242
+  , alpha = 255
+  , position = TopSize C 100 28
+
+  , textOffset = -1 -- Vertical alignment
+  , iconOffset = -1
+
+  , lowerOnStart = True
+  , pickBroadest = False
+  , persistent = False
+  , hideOnStart = False
+  , allDesktops = True
+  , overrideRedirect = False
+
+  , iconRoot = "/"
+  , commands =
+    [ Run UnsafeStdinReader
+    , Run Battery
+      [ "--template"          ,"<acstatus> <left>%"
+      , "-L"                  ,"10"
+      , "-H"                  ,"75"
+      , "--"
+      , "--highs"             ,"\xf581"
+      , "--mediums"           ,"\xf57f"
+      , "--lows"              ,"\xf582"
+      , "-O"                  ,"\xf583"
+      , "--on-icon-pattern"   ,""
+      , "-A"                  ,"15"
+      ] 10
+    , Run DynNetwork
+      ["--template"          , "<fc=#cc241d>\xe353 <rx>Kb/s \xe340 <tx>Kb/s</fc>"
+      ] 20
+    , Run Brightness 
+      ["--template"          , "\xf5df <percent>%"
+      , "--"
+      , "-D"                 , "intel_backlight"
+      ] 6
+    , Run Volume "default" "Master" 
+      ["--template"          ,"<status> <fc=#cc241d><volume>%</fc>"
+      , "--"
+      , "-C"                 ,"#cc241d"
+      , "-c"                 ,"#cc241d"
+      , "-O"                 ,""
+      , "-o"                 ,"<fc=#cc241d>\xfc5d</fc>"
+      , "-H"                 ,"75"
+      , "-L"                 ,"25"
+      , "-h"                 ,"<fc=#cc241d>\xf028</fc>"
+      , "-m"                 ,"<fc=#cc241d>\xfa7d</fc>"
+      , "-l"                 ,"<fc=#cc241d>\xfa7f</fc>"
+      ] 2
+    , Run Date "<fc=#ebdbb2>\xf5ef %a, %d/%m/%Y, %H:%M</fc>" "date" 10
+    , Run Com "/home/jbalatos/.xmonad/trayer-padding.sh" [] "trayerpad" 19
+    , Run Com "/home/jbalatos/.xmonad/pacman-updates.sh" [] "pacman" 20
+    , Run Com "/home/jbalatos/.xmonad/yay-updates.sh" [] "aur" 20
+    , Run Kbd [("us", "us"), ("gr", "gr")]
+    ]
+
+    , alignSep = "}{"
+    , sepChar = "%"
+    , template = " %UnsafeStdinReader% }{ %date% <fc=#d79921>|</fc>\
+                 \ %dynnetwork% <fc=#d79921>|</fc> <fc=#ebdbb2><fn=1></fn>\
+                 \ <action=alacritty -e sudo pacman -Syu>%pacman%</action> ,\
+                 \ <action=alacritty -e yay -Syu>%aur%</action></fc> <fc=#d79921>|</fc>\
+                 \ <fc=#cc241d>%kbd%</fc> <fc=#d79921>|</fc> %bright% <fc=#d79921>|</fc>\
+                 \ %default:Master% <fc=#d79921>|</fc> %battery% <fc=#d79921>|</fc>\
+                 \%trayerpad% "
+  }
+
