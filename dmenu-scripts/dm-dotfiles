@@ -1,0 +1,35 @@
+#! /usr/bin/bash
+
+declare -A dotfiles=(
+["Xmonad"]="$HOME/.xmonad/xmonad.hs"
+["Xmobar"]="$HOME/.xmonad/xmobarrc"
+["Vim"]="$HOME/.vimrc"
+["VimPlugins"]="$HOME/.vim/"
+["Qtile"]="$HOME/.config/qtile/config.py"
+["Alacritty"]="$HOME/.config/alacritty/alacritty.yml"
+["Startx"]="$HOME/.xinitrc"
+["Bash"]="$HOME/.bashrc"
+["Quit"]=""
+)
+
+declare -A restarts=(
+["Xmonad"]="xdotool key super+shift+r"
+["Xmobar"]="xdotool key super+shift+r"
+["Vim"]=""
+["VimPlugins"]=""
+["Qtile"]="xdotool key super+control+r"
+["Alacritty"]=""
+["Startx"]=""
+["Bash"]=""
+)
+
+choice=$(printf "%s\n" "${!dotfiles[@]}" | sort | ${1} -p "Dotfile: ")
+
+if [[ "${#choice}" -eq 0 ]]; then
+	exit 0
+elif [ "${choice}" == "Quit" ]; then
+	exit 0
+fi
+
+${2} "${dotfiles[${choice}]}"
+"${restarts[${choice}]}"

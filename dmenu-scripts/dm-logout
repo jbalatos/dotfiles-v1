@@ -1,0 +1,24 @@
+#! /usr/bin/bash
+
+declare -A options=(
+["LockScreen"]="slock"
+["Logout"]="xdotool key super+shift+q"
+["Reboot"]="systemctl reboot"
+["Shutdown"]="systemctl poweroff"
+["Suspend"]="systemctl suspend"
+["Quit"]=""
+)
+
+choice=$(printf "%s\n" ${!options[@]} | sort | ${1} -p "Shutdown menu: " )
+if [[ "${#choice}" -eq 0 ]]; then
+	exit 0
+elif [[ "${choice}" == "Quit" ]]; then
+	exit 0
+fi
+confirm=$(printf "No\nYes" | ${1} -p "${choice}?: ")
+
+if [[ confirm == "No" ]]; then
+	exit 0
+else
+	${options["${choice}"]}
+fi

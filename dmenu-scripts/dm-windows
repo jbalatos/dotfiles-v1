@@ -1,0 +1,11 @@
+#! /usr/bin/bash
+
+choice=$(wmctrl -l | awk '{sum += 1}; {print "[" sum "] " $4}; END {print "[0] Quit"}' | $1 -l 10 -p "Choose window: ")
+
+if [ "${choice}" == "[0] Quit" ]; then 
+	exit 0
+elif [[ "${#choice}" -eq 0 ]]; then
+	exit 0
+fi
+
+wmctrl -a $(wmctrl -l | grep -F $(echo $choice | awk '{print $2}') | awk '{print $4}')
