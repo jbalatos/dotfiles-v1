@@ -14,16 +14,18 @@ function! Comment(...)
 
 	execute "normal! mz"
 	if &ft == 'cpp' || &ft == "typescriptreact"
-		execute "'" . st ",'" . end "normal! I//"
+		execute "'" . st ",'" . end ."normal! I// "
 	elseif &ft == 'vim'
-		execute "'" . st ",'" . end "normal! I\""
+		execute "'" . st ",'" . end . "normal! I\" "
 	elseif &ft == 'sh' || &ft == "python"
-		execute "'" . st ",'" . end "normal! I#"
+		execute "'" . st ",'" . end . "normal! I# "
 	elseif &ft == 'tex'
-		execute "'" . st ",'" . end "normal! I%"
+		execute "'" . st ",'" . end . "normal! I% "
 	elseif &ft == 'css'
 		execute "normal! '" . st . "I/*"
 		execute "normal! '" . end . "A*/"
+	elseif &ft == "haskell"
+		execute "'" . st . ",'" . end . "normal! I-- "
 	endif
 	execute "normal! `z"
 endfunction
@@ -39,16 +41,18 @@ function! Uncomment(...)
 
 	execute "normal! mz"
 	if &ft == 'cpp' || &ft == "typescriptreact"
-		execute "'" . st . ",'" . end . "s/\\/\\///"
+		execute "'" . st . ",'" . end . "s/\\/\\/\ //"
 	elseif &ft == 'vim'
-		execute "'" . st . ",'" . end . "s/\"//"
+		execute "'" . st . ",'" . end . "s/\"\ //"
 	elseif &ft == 'tex'
-		execute "'" . st . ",'" . end . "s/%//"
+		execute "'" . st . ",'" . end . "s/%\ //"
 	elseif &ft == 'sh' || &ft == "python"
-		execute "'" . st . ",'" . end . "s/#//"
+		execute "'" . st . ",'" . end . "s/#\ //"
 	elseif &ft == 'css'
 		execute "'" . st ",'" . end . "s/\\/\\*//"
 		execute "'" . st ",'" . end . "s/\\*\\///"
+	elseif &ft == "haskell"
+		execute "'" . st . ",'" . end . "s/--\ //"
 	endif
 	execute "normal! `z"
 endfunction

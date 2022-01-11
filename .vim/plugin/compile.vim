@@ -73,6 +73,8 @@ autocmd BufEnter *.cpp :set errorformat=
 	\%-G%.%#
 autocmd BufEnter *.cpp :nnoremap <F12> :w <bar> make <bar> call RunProgram(1)<CR>
 autocmd BufEnter *.cpp :nnoremap <F9> :w <bar> make <bar> call RunProgram(0)<CR>
+autocmd BufEnter *.cpp :nnoremap <leader>r :call RunProgram(1)<CR>
+autocmd BufEnter *.cpp :nnoremap <leader>R :call RunProgram(1)<CR>
 autocmd VimLeavePre *.cpp :call delete( expand("%:r").".out" )
 
 autocmd BufEnter *.tex :set makeprg=pdflatex\ %:p
