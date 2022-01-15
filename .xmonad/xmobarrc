@@ -61,9 +61,9 @@ Config
       , "-l"                 ,"<fc=#cc241d>\xfa7f</fc>"
       ] 2
     , Run Date "<fc=#ebdbb2>\xf5ef %a, %d/%m/%Y, %H:%M</fc>" "date" 10
-    , Run Com "/home/jbalatos/.xmonad/trayer-padding.sh" [] "trayerpad" 19
-    , Run Com "/home/jbalatos/.xmonad/pacman-updates.sh" [] "pacman" 20
-    , Run Com "/home/jbalatos/.xmonad/yay-updates.sh" [] "aur" 20
+    , Run Com "/home/jbalatos/.xmonad/trayer-padding.sh" [] "trayerpad" 10
+    , Run Com "/home/jbalatos/.xmonad/pacman-updates.sh" [] "pacman" 300
+    , Run Com "/home/jbalatos/.xmonad/yay-updates.sh" [] "aur" 300
     , Run Kbd [("us", "us"), ("gr", "gr")]
     ]
 

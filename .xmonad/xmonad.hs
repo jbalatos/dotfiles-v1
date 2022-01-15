@@ -27,6 +27,7 @@ import XMonad.Hooks.ManageHelpers   (doCenterFloat, doFullFloat, isFullscreen)
 import XMonad.Hooks.SetWMName       (setWMName)
 
 import XMonad.Layout.Grid           (Grid(..))
+import XMonad.Layout.Maximize       (maximize, maximizeRestore)
 import XMonad.Layout.SimpleFloat    (simpleFloat)
 import XMonad.Layout.Spacing        (spacing)
 import XMonad.Layout.ThreeColumns   ( ThreeCol(ThreeColMid) )
@@ -35,6 +36,7 @@ import XMonad.Layout.ToggleLayouts  (toggleLayouts, ToggleLayout(..))
 import qualified XMonad.Layout.MultiToggle as MT (Toggle(..))
 import XMonad.Layout.MultiToggle.Instances (StdTransformers(..))
 
+import XMonad.Util.Cursor           (setDefaultCursor)
 import XMonad.Util.EZConfig         (additionalKeysP)
 import XMonad.Util.Run              (spawnPipe)
 import XMonad.Util.SpawnOnce        (spawnOnce)
@@ -72,10 +74,10 @@ myDmenuScript :: String
 myDmenuScript = "dmenu -h 28"
 
 myWorkspaces :: [String]
-myWorkspaces = ["dev", "web", "pdf", "mus", "misc", "com"]
+myWorkspaces = ["dev", "web", "pdf", "mus", "misc", "com", "ntua"]
 
 myWorkspaceKeys :: [String]
-myWorkspaceKeys = ["y", "u", "i", "o", "p", "["]
+myWorkspaceKeys = ["y", "u", "i", "o", "p", "[", "n"]
 
 myBorderWidth :: Dimension
 myBorderWidth = 2
@@ -146,6 +148,7 @@ myKeys =
   -- Window resizing
   , ("M-h", sendMessage Shrink)
   , ("M-l", sendMessage Expand)
+  , ("M-S-f", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts >> withFocused (sendMessage . maximizeRestore))
 
   -- Opacity
   , ("M-,", spawnHere $ "picom-trans -c -" ++ (show transparencyOffset))
@@ -163,7 +166,7 @@ myKeys =
   , ("<XF86AudioMute>", spawn "amixer set Master toggle")
   , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
   , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
-  , ("<Print>", spawn "flameshot screen")
+  , ("<Print>", spawn "flameshot screen -p $HOME/Pictures/")
   , ("C-<Print>", spawn "flameshot gui")
   ]
   -- Workspace moving
@@ -186,13 +189,16 @@ myStartupHook :: X ()
 myStartupHook = do
   spawn "killall trayer"
 
-  spawnOnce "monitors"
+  -- spawnOnce "monitors"
   spawnOnce "lxsession"
   spawnOnce "picom"
   spawnOnce "nm-applet"
   spawnOnce "volumeicon"
   spawnOnce "lxsession"
   spawnOnce "nitrogen --restore &"
+
+  spawnOnce "discord"
+  -- spawnOnce "spotify"
 
   spawn $ "sleep 2 && trayer --edge top --align right --widthtype request "
     ++ "--SetDockType true --SetPartialStrut true --expand true " 
@@ -218,6 +224,9 @@ myManageHook = insertPosition Below Newer <+> composeAll
 
   , isFullscreen                        --> doFullFloat
 
+  , className =? "discord"              --> doShift "com"
+  -- , className =? "Spotify"              --> doShift "mus"
+
   , className =? "Alacritty"            --> setTransparency 95
   ]
   where
@@ -230,7 +239,7 @@ myManageHook = insertPosition Below Newer <+> composeAll
 --------------------------------------------------------------------------------
 -- {{{
 -- myLayoutHook :: !(l Window)
-myLayoutHook = spacing mySpacing $ avoidStruts (tiled ||| Full ||| simpleFloat ||| colMid ||| Grid)
+myLayoutHook = spacing mySpacing $ avoidStruts $ maximize (tiled ||| Full ||| simpleFloat ||| colMid ||| Grid)
   where
     tiled = Tall 1  (3/100) (3/5)
     colMid = ThreeColMid 1 (3/100) (1/2)
@@ -251,7 +260,7 @@ myXmobarHook (xmproc0, xmproc1) = xmobarPP
   , ppUrgent           = xmobarColor (myColors ! "red") "" . wrap "!" "!" . clickable
 
   , ppTitle            = xmobarColor (myColors ! "foreground") "" . windowAction . shorten 40 
-  , ppLayout           = formatLayout
+  , ppLayout           = layoutAction . formatLayout
 
   , ppSep              = xmobarColor (myColors ! "yellow") "" " | "
   , ppWsSep            = ""
@@ -262,10 +271,13 @@ myXmobarHook (xmproc0, xmproc1) = xmobarPP
     clickable ws     = "<action=xdotool key super+" ++ (key ws) ++ ">" ++ ws ++ "</action>"
     key ws           = fixSymbols $ myWorkspaceMap ! ws
     myWorkspaceMap   = M.fromList $ zip myWorkspaces myWorkspaceKeys
-    fixSymbols key   = if (key == "[") then "bracketleft" else key
+    fixSymbols key   = if (key == "[") then "bracketleft"
+                       else if (key == "]") then "bracketright"
+                       else key
     windowAction win = if (win == "") then ""
                        else "<action=xdotool key super+shift+c><fc=" ++ (myColors ! "red")
                             ++ ">[X] </fc></action>" ++ win
+    layoutAction     = wrap "<action=xdotool key control+space>" "</action>"
 -- }}}
 
 --------------------------------------------------------------------------------
@@ -285,7 +297,7 @@ main = do
     , workspaces         = myWorkspaces
 
     , handleEventHook    = docksEventHook <+> fullscreenEventHook
-    , startupHook        = myStartupHook
+    , startupHook        = setDefaultCursor xC_left_ptr <+> myStartupHook
     , manageHook         = myManageHook <+> manageDocks
     , layoutHook         = myLayoutHook
     , logHook            = dynamicLogWithPP $ myXmobarHook (xmproc0, xmproc1)
