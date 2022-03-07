@@ -17,6 +17,9 @@ set noerrorbells
 set mouse=a
 set showcmd
 
+set autoread
+autocmd CursorHold * checktime
+
 syntax on
 filetype plugin on
 
@@ -54,6 +57,7 @@ call plug#begin()
 Plug 'morhetz/gruvbox'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'leafOfTree/vim-vue-plugin'
+" Plug 'vim-syntastic/syntastic'
 " Plug 'lervag/vimtex'
 call plug#end()
 
@@ -88,11 +92,16 @@ function! GoToMain()
 	endif
 endfunction"}}}
 
+autocmd VimEnter :lcd %:p:h
+nnoremap <leader>cd :lcd %:p:h
+nnoremap <leader>o :ls<CR>:b<Space>
+
 nnoremap <leader>gd :call GoToDefinitions()<CR>
 nnoremap <leader>gm :call GoToMain()<CR>
 
 inoremap <S-Tab> <right>
 nnoremap <leader>q :qa
+
 nnoremap <leader>sn :-1read ~/.vim/skeleton.
 nnoremap <leader>io :60vs %:r.in <bar> sp %:r.out<CR>
 

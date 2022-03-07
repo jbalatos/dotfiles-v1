@@ -50,11 +50,17 @@ inoremap "<CR> "<CR>"<ESC>O
 inoremap (<CR> (<CR>)<ESC>O
 inoremap [<CR> [<CR>]<ESC>O
 inoremap {<CR> {<CR>}<ESC>O
-autocmd BufRead *.tex :inoremap \[ \[<CR>\]<ESC>O
+
+autocmd BufRead *.tex :inoremap \[ \[\]<left><left>
+autocmd BufRead *.tex :inoremap \[<space> \[  \]<left><left><left>
+autocmd BufRead *.tex :inoremap \[<CR> \[<CR>\]<ESC>O
+autocmd BufRead *.tex :inoremap \( \(\)<left><left>
+autocmd BufRead *.tex :inoremap \(<space> \(  \)<left><left><left>
+autocmd BufRead *.tex :inoremap \(<CR> \(<CR>\)<ESC>O
 
 " Autoclose on html
 " Autoclose on latex
 autocmd BufEnter *.tex :inoremap <C-X><C-O> <C-C><C-C>mxyi{o\end{}<C-C><C-C>P`xa
 autocmd BufEnter *.tex :nnoremap <C-X><C-O> yi{o\end{}<C-C><C-C>P
 " Autoclose on tsx
-autocmd BufEnter *.htm,*.html,*.tsx :inoremap <leader>> ><C-C><C-C>F<lyiwf>a</><C-C><C-C>F/pF>a
+autocmd BufEnter *.htm,*.html,*.tsx,*.js :inoremap <leader>> <C-C><C-C>mzF<lyiw`za</><C-C><C-C>F/p`za
