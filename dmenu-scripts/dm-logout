@@ -5,7 +5,7 @@ declare -A options=(
 ["Logout"]="xdotool key super+shift+q"
 ["Reboot"]="systemctl reboot"
 ["Shutdown"]="systemctl poweroff"
-["Suspend"]="systemctl suspend"
+["Suspend"]="slock systemctl suspend"
 ["Quit"]=""
 )
 
@@ -15,9 +15,15 @@ if [[ "${#choice}" -eq 0 ]]; then
 elif [[ "${choice}" == "Quit" ]]; then
 	exit 0
 fi
+
+if [[ "${choice}" == "LockScreen" ]]; then
+	${options["${choice}"]}
+	exit 0
+fi
+
 confirm=$(printf "No\nYes" | ${1} -p "${choice}?: ")
 
-if [[ confirm == "No" ]]; then
+if [[ "${confirm}" == "No" ]]; then
 	exit 0
 else
 	${options["${choice}"]}

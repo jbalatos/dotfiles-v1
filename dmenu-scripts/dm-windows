@@ -1,6 +1,6 @@
 #! /usr/bin/bash
 
-choice=$(wmctrl -l | awk '{sum += 1}; {print "[" sum "] " $4}; END {print "[0] Quit"}' | $1 -l 10 -p "Choose window: ")
+choice=$(wmctrl -l | awk '{sum += 1}; {printf "[" sum "] "}; {for(i=4;i<=NF; i++) printf $i" "; print ""}; END {print "[0] Quit"}' | $1 -l 10 -p "Choose window: ")
 
 if [ "${choice}" == "[0] Quit" ]; then 
 	exit 0

@@ -14,6 +14,7 @@ import XMonad
 import qualified XMonad.StackSet    as W
 
 import XMonad.Actions.CycleWS       (toggleWS)
+import XMonad.Actions.GridSelect    
 import XMonad.Actions.MouseResize   (mouseResize)
 import XMonad.Actions.Promote       ()
 import XMonad.Actions.SpawnOn       (spawnHere)
@@ -28,12 +29,12 @@ import XMonad.Hooks.SetWMName       (setWMName)
 
 import XMonad.Layout.Grid           (Grid(..))
 import XMonad.Layout.Maximize       (maximize, maximizeRestore)
-import XMonad.Layout.SimpleFloat    (simpleFloat)
+import XMonad.Layout.SimplestFloat  (simplestFloat)
 import XMonad.Layout.Spacing        (spacing)
 import XMonad.Layout.ThreeColumns   ( ThreeCol(ThreeColMid) )
 import XMonad.Layout.ToggleLayouts  (toggleLayouts, ToggleLayout(..))
 
-import qualified XMonad.Layout.MultiToggle as MT (Toggle(..))
+import qualified XMonad.Layout.MultiToggle as MT (mkToggle, Toggle(..), EOT(EOT), (??))
 import XMonad.Layout.MultiToggle.Instances (StdTransformers(..))
 
 import XMonad.Util.Cursor           (setDefaultCursor)
@@ -64,8 +65,11 @@ myBrowser = "firefox"
 myFileBrowser :: String
 myFileBrowser = "pcmanfm"
 
+myShell :: String
+myShell = "bash"
+
 myEditor :: String
-myEditor = myTerminal ++ " -e vim"
+myEditor = "edit"
 
 myDmenu :: String
 myDmenu = "dmenu_run -h 28 -p \"> \""
@@ -101,6 +105,33 @@ myColors = M.fromList
   , ("aqua"       , "#689d6a")
   , ("grey"       , "#a89984")
   ]
+
+myApplications :: [( String, X() )]
+myApplications = [
+    ("Terminal", spawn myTerminal)
+  , ("Browser", spawn myBrowser)
+  , ("File Manager", spawn myFileBrowser)
+  , ("Editor", spawn myEditor)
+  , ("Discord", spawn "discord")
+  , ("Spotify", spawn "spotify")
+  , ("PDF Viewer", spawn "evince")
+  , ("Quit", spawn "echo AppSelector killed")
+  ]
+
+myGridConfig :: GSConfig (X ())
+myGridConfig = (buildDefaultGSConfig myColorizer) {
+    gs_cellheight = 40
+  , gs_cellwidth = 200
+  , gs_cellpadding = 6
+  , gs_font = myFont ++ ( show $ myFontSize + 2 )
+  , gs_navigate = navNSearch
+  , gs_originFractX = 0.5
+  , gs_originFractY = 0.5
+  }
+  where
+    myColorizer s active =
+      if active then return (myColors ! "red", myColors ! "foreground")
+                else return (myColors ! "background", myColors ! "foreground")
 -- }}}
 
 --------------------------------------------------------------------------------
@@ -123,11 +154,13 @@ myKeys =
   , ("M-r l", spawn $ "dm-logout \"" ++ myDmenuScript ++ "\"")
   , ("M-r d", spawn $ "dm-dotfiles \"" ++ myDmenuScript ++ "\" \"" ++ myEditor ++ "\"")
   , ("M-r w", spawn $ "dm-windows \"" ++ myDmenuScript ++ "\"")
+  , ("M-r a", runSelectedAction myGridConfig myApplications)
 
   -- Useful applications
   , ("M-<Return>", spawn myTerminal)
   , ("M-b", spawn myBrowser)
   , ("M-f", spawn myFileBrowser)
+  , ("M-v", spawn $ myEditor)
 
   -- Window killing
   , ("M-S-c", kill)
@@ -148,11 +181,11 @@ myKeys =
   -- Window resizing
   , ("M-h", sendMessage Shrink)
   , ("M-l", sendMessage Expand)
-  , ("M-S-f", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts >> withFocused (sendMessage . maximizeRestore))
+  , ("M-S-f", sendMessage (MT.Toggle NBFULL) >> sendMessage ToggleStruts)
 
   -- Opacity
-  , ("M-,", spawnHere $ "picom-trans -c -" ++ (show transparencyOffset))
-  , ("M-.", spawnHere $ "picom-trans -c +" ++ (show transparencyOffset))
+  , ("M--", spawnHere $ "picom-trans -c -" ++ (show transparencyOffset))
+  , ("M-=", spawnHere $ "picom-trans -c +" ++ (show transparencyOffset))
 
   -- Layouts - Borders
   , ("C-<Space>", sendMessage NextLayout)
@@ -166,8 +199,8 @@ myKeys =
   , ("<XF86AudioMute>", spawn "amixer set Master toggle")
   , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
   , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
-  , ("<Print>", spawn "flameshot screen -p $HOME/Pictures/")
-  , ("C-<Print>", spawn "flameshot gui")
+  , ("C-<Print>", spawn "flameshot screen -p $HOME/Pictures/")
+  , ("<Print>", spawn "flameshot screen -c")
   ]
   -- Workspace moving
   ++ [( "M-<Tab>", toggleWS )]
@@ -195,11 +228,14 @@ myStartupHook = do
   spawnOnce "nm-applet"
   spawnOnce "volumeicon"
   spawnOnce "lxsession"
+  spawnOnce "caffeine-indicator"
   spawnOnce "nitrogen --restore &"
+  spawn "setxkbmap -model pc104 -layout us,gr -option 'grp:win_space_toggle'"
 
-  spawnOnce "discord"
+  -- spawnOnce "discord"
   -- spawnOnce "spotify"
 
+  spawn $ "sleep 1 && monitors"
   spawn $ "sleep 2 && trayer --edge top --align right --widthtype request "
     ++ "--SetDockType true --SetPartialStrut true --expand true " 
     ++ "--transparent true --alpha 0 --height 28 --tint 0x"
@@ -239,7 +275,9 @@ myManageHook = insertPosition Below Newer <+> composeAll
 --------------------------------------------------------------------------------
 -- {{{
 -- myLayoutHook :: !(l Window)
-myLayoutHook = spacing mySpacing $ avoidStruts $ maximize (tiled ||| Full ||| simpleFloat ||| colMid ||| Grid)
+myLayoutHook = avoidStruts $ MT.mkToggle (NBFULL MT.?? NOBORDERS MT.?? MT.EOT) $ spacing mySpacing $
+-- myLayoutHook = spacing mySpacing $ avoidStruts $ maximize $ MT.mkToggle (NBFULL)
+  (tiled ||| Full ||| simplestFloat ||| colMid ||| Grid)
   where
     tiled = Tall 1  (3/100) (3/5)
     colMid = ThreeColMid 1 (3/100) (1/2)
@@ -266,9 +304,13 @@ myXmobarHook (xmproc0, xmproc1) = xmobarPP
   , ppWsSep            = ""
   }
   where
-    formatLayout l   = unwords $ filter (`notElem` removeFromLayout) $ words l
-    removeFromLayout = ["Spacing", "Simple"]
-    clickable ws     = "<action=xdotool key super+" ++ (key ws) ++ ">" ++ ws ++ "</action>"
+    formatLayout l   = unwords $ map replaceLayout $ filter (`notElem` removeFromLayout) $ words l
+    removeFromLayout = ["Maximize", "Spacing", "Simple"]
+    replaceLayout x  = if (x == "SimplestFloat") then "Float"
+                       else x
+    clickable ws     = "<action=`xdotool key super+" ++ (key ws) ++ "` button=1>" 
+                       ++ "<action=`xdotool key super+control+" ++ (key ws) ++ "` button=3>"
+                       ++ ws ++ "</action></action>"
     key ws           = fixSymbols $ myWorkspaceMap ! ws
     myWorkspaceMap   = M.fromList $ zip myWorkspaces myWorkspaceKeys
     fixSymbols key   = if (key == "[") then "bracketleft"
@@ -296,7 +338,7 @@ main = do
     , focusedBorderColor = myColors ! "red"
     , workspaces         = myWorkspaces
 
-    , handleEventHook    = docksEventHook <+> fullscreenEventHook
+    , handleEventHook    = docksEventHook
     , startupHook        = setDefaultCursor xC_left_ptr <+> myStartupHook
     , manageHook         = myManageHook <+> manageDocks
     , layoutHook         = myLayoutHook

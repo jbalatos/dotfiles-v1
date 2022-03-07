@@ -47,7 +47,7 @@ xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Natural Scrolling Ena
 #dunst -transparency 95 -dmenu /usr/bin/dmenu -browser /usr/bin/firefox &
 
 # Add greek keyboard layout
-setxkbmap -model pc104 -layout us,gr -option 'grp:win_space_toggle'
+# setxkbmap -model pc104 -layout us,gr -option 'grp:win_space_toggle'
 
 # Start window manager
 # QTile

@@ -15,8 +15,8 @@ alias la='ls -A'
 alias l='ls -CF'
 alias ls='ls --color=auto'
 shopt -s autocd
-alias opacity='picom-trans -c 95'
-alias no_opacity='picom-trans -c 100'
+shopt -s cdspell
+
 alias btset='brightnessctl set'
 alias ssh='dbclient'
 
@@ -34,4 +34,3 @@ export PF_COL1=4
 export PF_COL3=1
 
 pfetch
-source /usr/share/nvm/init-nvm.sh

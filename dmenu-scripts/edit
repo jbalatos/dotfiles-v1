@@ -1,0 +1,9 @@
+#! /usr/bin/bash
+
+if [[ "#${1}" -eq 0 ]]; then
+	alacritty --title vim -e bash -lc "vim" &
+elif [ "${1}" == "" ]; then
+	alacritty --title vim -e bash -lc "vim" &
+else 
+	alacritty --title Vim -e bash -lc "vim ${1}" &
+fi
