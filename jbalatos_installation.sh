@@ -6,9 +6,9 @@ if [ "$(id -u)" = 0 ]; then
 fi
 
 echo "--- Installing necessary packages from pacman... ---"
-sudo pacman -S git base-devel alsa-utils binutils bluez blueberry \
-	community/brightnessstl caffeine cmake ctags cups curl discord \
-	evince flameshot galculator gdb g++ hplip jdk-openjdk jre-openjdk \
+sudo pacman --noconfirm -S git base-devel alsa-utils binutils bluez blueberry \
+	cmake ctags cups curl discord \
+	evince flameshot galculator gdb gcc hplip jdk-openjdk jre-openjdk \
 	lxsession musescore networkmanager \
 	network-manager-applet nitrogen obs-studio pcmanfm pavucontrol \
 	picom polkit pulseaudio python simple-scan \
@@ -28,7 +28,7 @@ echo "--- Yay installed! ---"
 
 echo "--- Installing necessary packages from aur... ---"
 yay -S caffeine checkupdates-aur nerd-fonts-ubuntu-mono spotify teams \
-	zoom
+	zoom brightnessctl
 echo "--- AUR installation successful! ---"
 
 echo "--- Building dmenu-jbalatos... ---"
@@ -71,7 +71,7 @@ git clone https://github.com/jbalatos/dotfiles.git $HOME/dotfiles
 alias config='/usr/bin/git --git-dir=$HOME/dotfiles --work-tree=$HOME'
 config config --local status.showUntrackedFiles no
 config config --global credential.helper store
-config pull origin master
+config checkout
 echo "--- Dotfiles downloaded! ---"
 
 echo "--- Placing dmenu scripts at /usr/local/bin... ---"
