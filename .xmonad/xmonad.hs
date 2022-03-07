@@ -115,6 +115,11 @@ myApplications = [
   , ("Discord", spawn "discord")
   , ("Spotify", spawn "spotify")
   , ("PDF Viewer", spawn "evince")
+  , ("Calculator", spawn "galculator")
+  , ("Musescore", spawn "musescore")
+  , ("Scanner", spawn "simple-scan")
+  , ("OBS", spawn "obs-studio")
+  , ("VLC", spawn "vlc")
   , ("Quit", spawn "echo AppSelector killed")
   ]
 
@@ -130,8 +135,9 @@ myGridConfig = (buildDefaultGSConfig myColorizer) {
   }
   where
     myColorizer s active =
-      if active then return (myColors ! "red", myColors ! "foreground")
-                else return (myColors ! "background", myColors ! "foreground")
+      if active
+        then return (myColors ! "red", myColors ! "foreground")
+        else return (myColors ! "background", myColors ! "foreground")
 -- }}}
 
 --------------------------------------------------------------------------------
