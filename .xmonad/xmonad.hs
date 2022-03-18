@@ -112,6 +112,8 @@ myApplications = [
   , ("Browser", spawn myBrowser)
   , ("File Manager", spawn myFileBrowser)
   , ("Editor", spawn myEditor)
+  , ("Eclipse", spawn "eclipse")
+  , ("Geany", spawn "geany")
   , ("Discord", spawn "discord")
   , ("Spotify", spawn "spotify")
   , ("PDF Viewer", spawn "evince")
@@ -241,8 +243,8 @@ myStartupHook = do
   -- spawnOnce "discord"
   -- spawnOnce "spotify"
 
-  spawn $ "sleep 1 && monitors"
-  spawn $ "sleep 2 && trayer --edge top --align right --widthtype request "
+  spawn $ "monitors"
+  spawn $ "sleep 1.5 && trayer --edge top --align right --widthtype request "
     ++ "--SetDockType true --SetPartialStrut true --expand true " 
     ++ "--transparent true --alpha 0 --height 28 --tint 0x"
     ++ (tail $ myColors ! "background")
@@ -251,25 +253,30 @@ myStartupHook = do
 
 myManageHook :: Query(Endo WindowSet)
 myManageHook = insertPosition Below Newer <+> composeAll
-  [ className =? "confirm"              --> doFloat
-  , className =? "file_progress"        --> doFloat
-  , className =? "dialog"               --> doFloat
-  , className =? "download"             --> doFloat
-  , className =? "error"                --> doFloat
-  , className =? "notification"         --> doFloat
-  , className =? "toolbar"              --> doFloat
+  [ className =? "confirm"                   --> doFloat
+  , className =? "file_progress"             --> doFloat
+  , className =? "dialog"                    --> doFloat
+  , className =? "download"                  --> doFloat
+  , className =? "error"                     --> doFloat
+  , className =? "notification"              --> doFloat
+  , className =? "toolbar"                   --> doFloat
 
-  , className =? "Blueberry.py"         --> doCenterFloat
-  , className =? "Nm-connection-editor" --> doCenterFloat
-  , className =? "Pavucontrol"          --> doCenterFloat
-  , className =? "Galculator"           --> doCenterFloat
+  , className =? "Blueberry.py"              --> doCenterFloat
+  , className =? "Nm-connection-editor"      --> doCenterFloat
+  , className =? "nm-applet"                 --> doCenterFloat
+  , className =? "Pavucontrol"               --> doCenterFloat
+  , className =? "Galculator"                --> doCenterFloat
+  , className =? "vncviewer"                 --> doCenterFloat
+  , title     =? "progtech"                  --> doCenterFloat
+  , title     =? "Eclipse"                   --> doCenterFloat
 
-  , isFullscreen                        --> doFullFloat
+  , isFullscreen                             --> doFullFloat
 
-  , className =? "discord"              --> doShift "com"
-  -- , className =? "Spotify"              --> doShift "mus"
+  , className =? "discord"                   --> doShift "com"
+  -- , className =? "Spotify"                  --> doShift "mus"
 
-  , className =? "Alacritty"            --> setTransparency 95
+  , className =? "Alacritty"                 --> setTransparency 95
+  , className =? "microsoft teams - preview" --> setTransparency 100
   ]
   where
     setTransparency num = liftX (spawnHere $ "picom-trans -c " ++ (show num))

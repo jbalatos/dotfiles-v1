@@ -69,12 +69,15 @@ Config
 
     , alignSep = "}{"
     , sepChar = "%"
-    , template = " <action=xdotool key super+r && sleep 0.2 && xdotool key a><icon=arch_logo.xpm/></action> %UnsafeStdinReader% }{ %date% <fc=#d79921>|</fc>\
+    , template = " <action=xdotool key super+r && sleep 0.2 && xdotool key a><icon=arch_logo.xpm/></action>\
+                 \ %UnsafeStdinReader% }{ %date% <fc=#d79921>|</fc>\
                  \ %dynnetwork% <fc=#d79921>|</fc> <fc=#ebdbb2><fn=1></fn>\
                  \ <action=alacritty -e sudo pacman -Syu>%pacman%</action> ,\
                  \ <action=alacritty -e yay -Syu>%aur%</action></fc> <fc=#d79921>|</fc>\
-                 \ <action=xdotool key super+space><fc=#cc241d>%kbd%</fc></action> <fc=#d79921>|</fc> %bright% <fc=#d79921>|</fc>\
-                 \ %default:Master% <fc=#d79921>|</fc> %battery% <fc=#d79921>|</fc>\
-                 \%trayerpad% "
+                 \ <action=xdotool key super+space><fc=#cc241d>%kbd%</fc></action>\
+                 \ <fc=#d79921>|</fc> %bright% <fc=#d79921>|</fc>\
+                 \ %default:Master% <fc=#d79921>|</fc>\
+                 \ <action=xdotool key super+r && sleep 0.2 && xdotool key l>%battery%</action>\
+                 \ <fc=#d79921>|</fc>%trayerpad% "
   }
 
