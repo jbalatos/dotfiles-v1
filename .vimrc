@@ -57,9 +57,12 @@ call plug#begin()
 Plug 'morhetz/gruvbox'
 Plug 'maxmellon/vim-jsx-pretty'
 Plug 'leafOfTree/vim-vue-plugin'
-" Plug 'vim-syntastic/syntastic'
-" Plug 'lervag/vimtex'
+Plug 'xavierd/clang_complete'
 call plug#end()
+
+let g:clang_library_path='/usr/lib'
+let g:clang_complete_auto=0
+let g:clang_user_options = '-std=c++11'
 
 colo gruvbox
 set background=dark
@@ -75,6 +78,7 @@ let g:netrw_winsize = 20
 set tags+=~/.vim/tags/cpp
 set completeopt=menuone,longest
 set shortmess+=c
+set pumheight=20
 
 function! GoToDefinitions()"{{{
 	if &ft == 'cpp' || &ft == 'c'
