@@ -3,7 +3,7 @@ if exists("loaded_compile")
 endif
 let g:loaded_compile=1
 
-nnoremap <F12> :make<CR>
+nnoremap <F12> :make!<CR>
 
 function! ShellCommand(cmd) "{{{
 	let initial_nr = bufwinnr(bufname())
@@ -65,8 +65,9 @@ function! RunProgram(output) "{{{
 	endif
 endfunc "}}}
 
+
 "autocmd BufEnter *.cpp :set makeprg=g++\ %\ -o\ %:r\ -DLOCAL\ -std=c++11\ -g\ -fsanitize=address\ -fsanitize=undefined
-autocmd BufEnter *.cpp :set makeprg=g++\ %\ -o\ %:r\ -DLOCAL\ -std=c++11\ -O2\ -Wall\ -g
+autocmd BufRead *.cpp : if filereadable(expand("makefile")) | set makeprg=make\ %:r | else | set makeprg=g++\ %\ -o\ %:r\ -DLOCAL\ -std=c++11\ -O2\ -Wall\ -g | endif
 autocmd BufEnter *.cpp :set errorformat=
 	\%E%f\:%l\:%c\:\ error\:\ %m,
 	\%W%f\:%l\:%c\:\ warning\:\ %m,

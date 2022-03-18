@@ -51,6 +51,14 @@ inoremap (<CR> (<CR>)<ESC>O
 inoremap [<CR> [<CR>]<ESC>O
 inoremap {<CR> {<CR>}<ESC>O
 
+" Autoclose with new line inside and semicolon
+inoremap ';<CR> '<CR>';<ESC>O
+inoremap `;<CR> `<CR>`;<ESC>O
+inoremap ";<CR> "<CR>";<ESC>O
+inoremap (;<CR> (<CR>);<ESC>O
+inoremap [;<CR> [<CR>];<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
+
 autocmd BufRead *.tex :inoremap \[ \[\]<left><left>
 autocmd BufRead *.tex :inoremap \[<space> \[  \]<left><left><left>
 autocmd BufRead *.tex :inoremap \[<CR> \[<CR>\]<ESC>O
