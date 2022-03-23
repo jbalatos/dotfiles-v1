@@ -1,0 +1,58 @@
+#! /usr/bin/env bash
+
+monitors=$(xrandr | grep -e " connected ")
+
+if [[ $(echo "$monitors" | wc -l) -eq 1 ]]; then
+	xrandr --output eDP1 --mode 1920x1080 --primary
+	exit 0
+fi
+
+options=(
+"monitor"
+"duplicate"
+"extend"
+"external"
+"quit"
+)
+
+declare -A positions=(
+["above"]="--above"
+["below"]="--below"
+["left"]="--left-of"
+["right"]="--right-of"
+)
+
+choice=$2
+if [[ "${#choice}" -eq 0 ]]; then
+	choice=$(printf "%s\n" "${options[@]}" | ${1} -p "Mode: ")
+fi
+
+if [[ "${#choice}" -eq 0  ]]; then
+	exit 0
+elif [ "${choice}" == "quit"]; then # quit
+	exit 0
+elif [ "${choice}" == "only monitor" ]; then
+	xrandr --output eDP1 --auto --primary
+	xrandr --output HDMI1 --off
+elif [ "${choice}" == "duplicate" ]; then
+	xrandr --output eDP1 --auto --primary
+	xrandr --output HDMI1 --auto --same-as eDP1
+elif [ "${choice}" == "extend" ]; then
+
+	choice2=$3
+	if [[ "${#choice2}" -eq 0 ]]; then
+		choice2=$(echo "$monitors" | awk '{ print $1 }' | ${1} -p "Primary: ")
+	fi
+
+	choice3=$4
+	if [[ "${#choice3}" -eq 0 ]]; then
+		choice3=$(printf "%s\n" "${!positions[@]}" | ${1} -p "Sec. position: ")
+	fi
+
+	xrandr --output "$choice2" --auto --primary
+	xrandr --output $(echo "$monitors" | grep -v "$choice2" | awk '{ print $1 }') --auto "${positions[$choice3]}" "$choice2"
+
+elif [ "${choice}" == "only external" ]; then
+	xrandr --output HDMI1 --auto --primary
+	xrandr --output eDP1 --off
+fi
