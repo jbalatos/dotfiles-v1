@@ -28,9 +28,10 @@ import XMonad.Hooks.ManageHelpers   (doCenterFloat, doFullFloat, isFullscreen)
 import XMonad.Hooks.SetWMName       (setWMName)
 
 import XMonad.Layout.Grid           (Grid(..))
+import XMonad.Layout.LayoutModifier (ModifiedLayout)
 import XMonad.Layout.Maximize       (maximize, maximizeRestore)
 import XMonad.Layout.SimplestFloat  (simplestFloat)
-import XMonad.Layout.Spacing        (spacing)
+import XMonad.Layout.Spacing        (Spacing, spacingRaw, Border(..))
 import XMonad.Layout.ThreeColumns   ( ThreeCol(ThreeColMid) )
 import XMonad.Layout.ToggleLayouts  (toggleLayouts, ToggleLayout(..))
 
@@ -86,8 +87,9 @@ myWorkspaceKeys = ["y", "u", "i", "o", "p", "[", "n"]
 myBorderWidth :: Dimension
 myBorderWidth = 2
 
-mySpacing :: Int
-mySpacing = 8
+mySpacing :: l a -> ModifiedLayout Spacing l a
+mySpacing = spacingRaw False (Border i i i i) True (Border i i i i) True
+  where i = 8
 
 transparencyOffset :: Int
 transparencyOffset = 5
@@ -122,6 +124,7 @@ myApplications = [
   , ("Scanner", spawn "simple-scan")
   , ("OBS", spawn "obs-studio")
   , ("VLC", spawn "vlc")
+  , ("Bottles", spawn "bottles")
   , ("Quit", spawn "echo AppSelector killed")
   ]
 
@@ -162,6 +165,7 @@ myKeys =
   , ("M-r l", spawn $ "dm-logout \"" ++ myDmenuScript ++ "\"")
   , ("M-r d", spawn $ "dm-dotfiles \"" ++ myDmenuScript ++ "\" \"" ++ myEditor ++ "\"")
   , ("M-r w", spawn $ "dm-windows \"" ++ myDmenuScript ++ "\"")
+  , ("M-r m", spawn $ "dm-monitors \"" ++ myDmenuScript ++ "\"")
   , ("M-r a", runSelectedAction myGridConfig myApplications)
 
   -- Useful applications
@@ -243,7 +247,7 @@ myStartupHook = do
   -- spawnOnce "discord"
   -- spawnOnce "spotify"
 
-  spawn $ "monitors"
+  spawnOnce $ "sleep 1 && monitors"
   spawn $ "sleep 1.5 && trayer --edge top --align right --widthtype request "
     ++ "--SetDockType true --SetPartialStrut true --expand true " 
     ++ "--transparent true --alpha 0 --height 28 --tint 0x"
@@ -260,6 +264,8 @@ myManageHook = insertPosition Below Newer <+> composeAll
   , className =? "error"                     --> doFloat
   , className =? "notification"              --> doFloat
   , className =? "toolbar"                   --> doFloat
+  , className =? "zoom"                      --> doFloat
+  -- , className =? "GNU Octave"                --> doFloat
 
   , className =? "Blueberry.py"              --> doCenterFloat
   , className =? "Nm-connection-editor"      --> doCenterFloat
@@ -288,8 +294,7 @@ myManageHook = insertPosition Below Newer <+> composeAll
 --------------------------------------------------------------------------------
 -- {{{
 -- myLayoutHook :: !(l Window)
-myLayoutHook = avoidStruts $ MT.mkToggle (NBFULL MT.?? NOBORDERS MT.?? MT.EOT) $ spacing mySpacing $
--- myLayoutHook = spacing mySpacing $ avoidStruts $ maximize $ MT.mkToggle (NBFULL)
+myLayoutHook = avoidStruts $ MT.mkToggle (NBFULL MT.?? NOBORDERS MT.?? MT.EOT) $ mySpacing $
   (tiled ||| Full ||| simplestFloat ||| colMid ||| Grid)
   where
     tiled = Tall 1  (3/100) (3/5)
