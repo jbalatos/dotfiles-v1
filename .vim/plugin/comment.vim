@@ -19,7 +19,7 @@ function! Comment(...)
 		execute "'" . st ",'" . end . "normal! I\" "
 	elseif &ft == 'sh' || &ft == "python"
 		execute "'" . st ",'" . end . "normal! I# "
-	elseif &ft == 'tex'
+	elseif &ft == 'tex' || &ft == 'matlab'
 		execute "'" . st ",'" . end . "normal! I% "
 	elseif &ft == 'css'
 		execute "normal! '" . st . "I/*"
@@ -44,7 +44,7 @@ function! Uncomment(...)
 		execute "'" . st . ",'" . end . "s/\\/\\/\ //"
 	elseif &ft == 'vim'
 		execute "'" . st . ",'" . end . "s/\"\ //"
-	elseif &ft == 'tex'
+	elseif &ft == 'tex' || &ft == 'matlab'
 		execute "'" . st . ",'" . end . "s/%\ //"
 	elseif &ft == 'sh' || &ft == "python"
 		execute "'" . st . ",'" . end . "s/#\ //"

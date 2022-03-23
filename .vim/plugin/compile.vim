@@ -3,7 +3,7 @@ if exists("loaded_compile")
 endif
 let g:loaded_compile=1
 
-nnoremap <F12> :make!<CR>
+nnoremap <F12> :w <bar> make!<CR>
 
 function! ShellCommand(cmd) "{{{
 	let initial_nr = bufwinnr(bufname())
@@ -67,30 +67,33 @@ endfunc "}}}
 
 
 "autocmd BufEnter *.cpp :set makeprg=g++\ %\ -o\ %:r\ -DLOCAL\ -std=c++11\ -g\ -fsanitize=address\ -fsanitize=undefined
-autocmd BufRead *.cpp : if filereadable(expand("makefile")) | set makeprg=make\ %:r | else | set makeprg=g++\ %\ -o\ %:r\ -DLOCAL\ -std=c++11\ -O2\ -Wall\ -g | endif
-autocmd BufEnter *.cpp :set errorformat=
+autocmd FileType cpp : if filereadable(expand("makefile")) | set makeprg=make\ %:r | else | set makeprg=g++\ %\ -o\ %:r\ -DLOCAL\ -std=c++11\ -O2\ -Wall\ -g | endif
+autocmd FileType cpp :set errorformat=
 	\%E%f\:%l\:%c\:\ error\:\ %m,
 	\%W%f\:%l\:%c\:\ warning\:\ %m,
 	\%-G%.%#
-autocmd BufEnter *.cpp :nnoremap <F12> :w <bar> make <bar> call RunProgram(1)<CR>
-autocmd BufEnter *.cpp :nnoremap <F9> :w <bar> make <bar> call RunProgram(0)<CR>
-autocmd BufEnter *.cpp :nnoremap <leader>r :call RunProgram(1)<CR>
-autocmd BufEnter *.cpp :nnoremap <leader>R :call RunProgram(0)<CR>
-autocmd VimLeavePre *.cpp :call delete( expand("%:r").".out" )
+autocmd FileType cpp :nnoremap <F12> :w <bar> make <bar> call RunProgram(1)<CR>
+autocmd FileType cpp :nnoremap <F9> :w <bar> make <bar> call RunProgram(0)<CR>
+autocmd FileType cpp :nnoremap <leader>r :call RunProgram(1)<CR>
+autocmd FileType cpp :nnoremap <leader>R :call RunProgram(0)<CR>
+autocmd VimLeavePre cpp :call delete( expand("%:r").".out" )
 
-autocmd BufEnter *.tex :set makeprg=pdflatex\ %:p
-autocmd BufEnter *.tex :set errorformat=%-G%.%#
-autocmd BufEnter *.tex :nnoremap <F12> :w <bar> make<CR>
-autocmd BufEnter *.tex :nnoremap <F9> :!evince %:r.pdf &<CR>
+autocmd FileType plaintex :set makeprg=pdflatex\ %:p
+autocmd FileType plaintex :set errorformat=%-G%.%#
+autocmd FileType plaintex :nnoremap <F12> :w <bar> make<CR>
+autocmd FileType plaintex :nnoremap <F9> :!evince %:r.pdf &<CR>
 
-autocmd BufEnter *.js :set makeprg=eslint\ .
-autocmd BufEnter *.tsx :set makeprg=tsc
+autocmd FileType javascript :set makeprg=eslint\ .
+autocmd FileType typescriptreact :set makeprg=tsc
 
-autocmd BufEnter *.java :set makeprg=javac\ %
+autocmd FileType java :set makeprg=javac\ %
 
-autocmd BufEnter *.md :nnoremap <F12> :w <bar> !clear && pandoc % --from=gfm --pdf-engine=xelatex -o %:r.pdf -V mainfont="Liberation Serif" -t latex<CR>
-autocmd BufEnter *.md :nnoremap <F9> :!evince %:r.pdf &<CR>
+autocmd FileType markdown :nnoremap <F12> :w <bar> !clear && pandoc % --from=gfm --pdf-engine=xelatex -o %:r.pdf -V mainfont="Liberation Serif" -t latex<CR>
+autocmd FileType markdown :nnoremap <F9> :!evince %:r.pdf &<CR>
 
-autocmd BufEnter *.dot :nnoremap <F12> :w <bar> !clear && dot -Tpng % -o %:r.png<CR>
+autocmd FileType dot :nnoremap <F12> :w <bar> !clear && dot -Tpng % -o %:r.png<CR>
 
-autocmd BufEnter *.py :nnoremap <F12> :w <bar> !clear && python3 %<CR>
+autocmd FileType python :nnoremap <F12> :w <bar> !clear && python3 %<CR>
+
+autocmd FileType matlab :set makeprg=octave\ %
+autocmd FileType matlab :norm! iwaitforbuttonpress()
