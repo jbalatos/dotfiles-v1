@@ -33,11 +33,6 @@ fi
 #Open nm-applet
 #nm-applet &
 
-# Set trackpad options
-xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Tapping Enabled" 1
-xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Click Method Enabled" 0 1
-xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Natural Scrolling Enabled" 1
-
 # Open flameshot
 #flameshot &
 
@@ -45,6 +40,10 @@ xinput set-prop "MSFT0001:00 06CB:7E7E Touchpad" "libinput Natural Scrolling Ena
 #picom &
 #lxsession &
 #dunst -transparency 95 -dmenu /usr/bin/dmenu -browser /usr/bin/firefox &
+
+xinput set-prop "DLL06E4:01 06CB:7A13 Touchpad" "libinput Click Method Enabled" 0 1
+xinput set-prop "DLL06E4:01 06CB:7A13 Touchpad" "libinput Tapping Enabled" 1
+xinput set-prop "DLL06E4:01 06CB:7A13 Touchpad" "libinput Natural Scrolling Enabled" 1
 
 # Add greek keyboard layout
 # setxkbmap -model pc104 -layout us,gr -option 'grp:win_space_toggle'

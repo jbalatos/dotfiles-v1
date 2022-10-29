@@ -2,14 +2,25 @@
 
 declare -A options=(
 ["LockScreen"]="slock"
-["Logout"]="xdotool key super+shift+q"
-["Reboot"]="systemctl reboot"
-["Shutdown"]="systemctl poweroff"
-["Suspend"]="slock systemctl suspend"
+["Logout"]="pkill x"
+["Reboot"]="sudo systemctl reboot"
+["Shutdown"]="sudo systemctl poweroff"
+["Suspend"]="slock sudo systemctl suspend"
 ["Quit"]=""
 )
 
-choice=$(printf "%s\n" ${!options[@]} | sort | ${1} -p "Shutdown menu: " )
+script=""
+for var in "$@";
+do
+	if [[ "$var" != $1 ]]; then
+		script+=" "
+	fi
+	script+="$var"
+done
+
+echo $script
+
+choice=$(printf "%s\n" ${!options[@]} | sort | dmenu ${script} -p "Shutdown: " )
 if [[ "${#choice}" -eq 0 ]]; then
 	exit 0
 elif [[ "${choice}" == "Quit" ]]; then
@@ -21,10 +32,10 @@ if [[ "${choice}" == "LockScreen" ]]; then
 	exit 0
 fi
 
-confirm=$(printf "No\nYes" | ${1} -p "${choice}?: ")
+confirm=$(printf "No\nYes" | dmenu $script -p "${choice}?: ")
 
-if [[ "${confirm}" == "No" ]]; then
-	exit 0
-else
+if [[ "${confirm}" == "Yes" ]]; then
 	${options["${choice}"]}
+else
+	exit 0
 fi

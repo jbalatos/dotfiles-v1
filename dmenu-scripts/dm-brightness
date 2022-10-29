@@ -1,0 +1,16 @@
+#! /usr/bin/bash
+
+script=""
+for var in "$@";
+do
+	if [[ "$var" != $1 ]]; then
+		script+=" "
+	fi
+	script+="$var"
+done
+
+echo test
+choice=$(dmenu $script -p "Set brightness: ")
+
+choice=$choice."%"
+brightnessctl set "$choice"

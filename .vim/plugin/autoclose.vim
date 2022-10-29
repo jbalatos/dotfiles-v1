@@ -10,6 +10,7 @@ inoremap " ""<left>
 inoremap ( ()<left>
 inoremap [ []<left>
 inoremap { {}<left>
+inoremap /* /**/<left><left>
 autocmd BufRead *.tex :inoremap \( \(  \)<left><left><left>
 autocmd BufRead *.tex :inoremap $ $$<left>
 
@@ -19,6 +20,7 @@ inoremap "<space> "  "<left><left>
 inoremap (<space> (  )<left><left>
 inoremap [<space> [  ]<left><left>
 inoremap {<space> {  }<left><left>
+inoremap /*<space> /*  */<left><left><left>
 
 " Autoclose with exceeding semicolon (with/without space)
 inoremap '; '';<left><left>
@@ -43,6 +45,13 @@ inoremap (<Tab> ()
 inoremap [<Tab> []
 inoremap {<Tab> {}
 
+inoremap '' ''
+inoremap `` ``
+inoremap "" ""
+inoremap () ()
+inoremap [] []
+inoremap {} {}
+
 " Autoclose with new line inside
 inoremap '<CR> '<CR>'<ESC>O
 inoremap `<CR> `<CR>`<ESC>O
@@ -50,6 +59,7 @@ inoremap "<CR> "<CR>"<ESC>O
 inoremap (<CR> (<CR>)<ESC>O
 inoremap [<CR> [<CR>]<ESC>O
 inoremap {<CR> {<CR>}<ESC>O
+inoremap /*<CR> /*<CR>*/<ESC>O
 
 " Autoclose with new line inside and semicolon
 inoremap ';<CR> '<CR>';<ESC>O

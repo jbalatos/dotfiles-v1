@@ -4,15 +4,27 @@ declare -A dotfiles=(
 ["Xmonad"]="$HOME/.xmonad/xmonad.hs"
 ["Xmobar"]="$HOME/.xmonad/xmobarrc"
 ["Vim"]="$HOME/.vimrc"
-["VimPlugins"]="$HOME/.vim/"
+["VimPlugins"]="$HOME/.vim/plugin/"
 ["Qtile"]="$HOME/.config/qtile/config.py"
 ["Alacritty"]="$HOME/.config/alacritty/alacritty.yml"
 ["Startx"]="$HOME/.xinitrc"
 ["Bash"]="$HOME/.bashrc"
+["DmenuScripts"]="$HOME/dmenu-scripts"
 ["Quit"]=""
 )
 
-choice=$(printf "%s\n" "${!dotfiles[@]}" | sort | ${1} -p "Dotfile: ")
+script=""
+for var in "$@";
+do
+	if [[ "$var" == $1 ]]; then
+		continue;
+	elif [[ "$var" != $2 ]]; then
+		script+=" "
+	fi
+	script+="$var"
+done
+
+choice=$(printf "%s\n" "${!dotfiles[@]}" | sort | dmenu $script -p "Dotfile: ")
 
 if [[ "${#choice}" -eq 0 ]]; then
 	exit 0
@@ -20,4 +32,4 @@ elif [ "${choice}" == "Quit" ]; then
 	exit 0
 fi
 
-${2} "${dotfiles[${choice}]}"
+${1} "${dotfiles[${choice}]}"

@@ -13,7 +13,7 @@ function! Comment(...)
 	endif
 
 	execute "normal! mz"
-	if &ft == 'cpp' || &ft == "typescriptreact" || &ft == 'javascript'
+	if &ft == 'c' || &ft == 'cpp' || &ft == "typescriptreact" || &ft == 'javascript'
 		execute "'" . st ",'" . end ."normal! I// "
 	elseif &ft == 'vim'
 		execute "'" . st ",'" . end . "normal! I\" "
@@ -40,7 +40,7 @@ function! Uncomment(...)
 	endif
 
 	execute "normal! mz"
-	if &ft == 'cpp' || &ft == "typescriptreact" || &ft == 'javascript'
+	if &ft == 'c' || &ft == 'cpp' || &ft == "typescriptreact" || &ft == 'javascript'
 		execute "'" . st . ",'" . end . "s/\\/\\/\ //"
 	elseif &ft == 'vim'
 		execute "'" . st . ",'" . end . "s/\"\ //"

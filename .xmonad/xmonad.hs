@@ -18,7 +18,7 @@ import XMonad.Actions.GridSelect
 import XMonad.Actions.MouseResize   (mouseResize)
 import XMonad.Actions.Promote       ()
 import XMonad.Actions.SpawnOn       (spawnHere)
-import XMonad.Actions.WithAll       (killAll, sinkAll)
+import XMonad.Actions.WithAll       (killAll, sinkAll, withAll)
 
 import XMonad.Hooks.DynamicLog      (dynamicLogWithPP, shorten, PP(..), wrap, xmobarColor, xmobarPP)
 import XMonad.Hooks.EwmhDesktops    (ewmh, fullscreenEventHook)
@@ -66,17 +66,20 @@ myBrowser = "firefox"
 myFileBrowser :: String
 myFileBrowser = "pcmanfm"
 
+myTransparency :: Int
+myTransparency = 90
+
 myShell :: String
 myShell = "bash"
 
 myEditor :: String
-myEditor = "edit"
+myEditor = "gvim"
 
 myDmenu :: String
 myDmenu = "dmenu_run -h 28 -p \"> \""
 
 myDmenuScript :: String
-myDmenuScript = "dmenu -h 28"
+myDmenuScript = "-h 28"
 
 myWorkspaces :: [String]
 myWorkspaces = ["dev", "web", "pdf", "mus", "misc", "com", "ntua"]
@@ -125,7 +128,9 @@ myApplications = [
   , ("OBS", spawn "obs-studio")
   , ("VLC", spawn "vlc")
   , ("Bottles", spawn "bottles")
+  , ("Arduino", spawn "arduino")
   , ("Quit", spawn "echo AppSelector killed")
+  , ("Emacs", spawn "emacs")
   ]
 
 myGridConfig :: GSConfig (X ())
@@ -151,10 +156,12 @@ myGridConfig = (buildDefaultGSConfig myColorizer) {
 -- {{{
 myKeys :: [( String, X () )]
 myKeys =
+  -- START_KEYS
   -- Basic xmonad functionality
   [ ("M-C-r", spawn "xmonad --recompile")
   , ("M-S-r", spawn "xmonad --restart")
   , ("M-S-q", io exitSuccess)
+  -- , ("M-S-q", spawn $ "dm-logout " ++ myDmenuScript)
   , ("M-q", spawn "echo \"removed default xmonad restart\"")
 
   -- Dmenu
@@ -162,21 +169,24 @@ myKeys =
 
   -- Dmenu scripts
   , ("M-r r", spawn $ myDmenu)
-  , ("M-r l", spawn $ "dm-logout \"" ++ myDmenuScript ++ "\"")
-  , ("M-r d", spawn $ "dm-dotfiles \"" ++ myDmenuScript ++ "\" \"" ++ myEditor ++ "\"")
-  , ("M-r w", spawn $ "dm-windows \"" ++ myDmenuScript ++ "\"")
-  , ("M-r m", spawn $ "dm-monitors \"" ++ myDmenuScript ++ "\"")
+  , ("M-r l", spawn $ "dm-logout " ++ myDmenuScript)
+  , ("M-r d", spawn $ "dm-dotfiles \"" ++ myEditor ++ "\" " ++ myDmenuScript)
+  , ("M-r w", spawn $ "dm-windows " ++ myDmenuScript)
+  , ("M-r m", spawn $ "dm-monitors " ++ myDmenuScript)
+  , ("M-r b", spawn $ "dm-brightness " ++ myDmenuScript)
   , ("M-r a", runSelectedAction myGridConfig myApplications)
+  , ("M-r e", spawn $ myEditor)
+  -- , ("M-r t", spawn $ myClock)
 
   -- Useful applications
   , ("M-<Return>", spawn myTerminal)
   , ("M-b", spawn myBrowser)
   , ("M-f", spawn myFileBrowser)
-  , ("M-v", spawn $ myEditor)
 
   -- Window killing
   , ("M-S-c", kill)
   , ("M-S-a", killAll)
+  -- , ("M-S-o", withAll killRest)
 
   -- Floating windows
   , ("M-t", withFocused $ windows . W.sink)
@@ -209,8 +219,8 @@ myKeys =
   , ("<XF86AudioPrev>", spawn "playerctl previous")
   , ("<XF86AudioNext>", spawn "playerctl next")
   , ("<XF86AudioMute>", spawn "amixer set Master toggle")
-  , ("<XF86AudioLowerVolume>", spawn "amixer set Master 5%- unmute")
-  , ("<XF86AudioRaiseVolume>", spawn "amixer set Master 5%+ unmute")
+  , ("<XF86AudioLowerVolume>", spawn "amixer -D pulse sset Master 5%- unmute")
+  , ("<XF86AudioRaiseVolume>", spawn "amixer -D pulse sset Master 5%+ unmute")
   , ("C-<Print>", spawn "flameshot screen -p $HOME/Pictures/")
   , ("<Print>", spawn "flameshot screen -c")
   ]
@@ -224,6 +234,11 @@ myKeys =
     switchTo        (ws, key)   = ("M-" ++ key, windows $ W.greedyView ws)
     moveTo          (ws, key)   = ("M-C-" ++ key, windows $ W.shift ws)
     moveAndSwitchTo (ws, key)   = ("M-S-" ++ key, windows $ W.greedyView ws . W.shift ws)
+    -- currentWindow               = W.current . windowset
+    -- killRest        (win)       = case win of
+      -- currentWindow -> reveal win
+      -- otherwise     -> killWindow win
+  -- END_KEYS
 -- }}}
 
 --------------------------------------------------------------------------------
@@ -234,12 +249,14 @@ myStartupHook :: X ()
 myStartupHook = do
   spawn "killall trayer"
 
+  spawnOnce "xinput set-prop \"MSFT0001:00 06CB:7E7E Touchpad\" \"libinput Click Method Enabled\" 0 1"
+  spawnOnce "xinput set-prop \"MSFT0001:00 06CB:7E7E Touchpad\" \"libinput Tapping Enabled\" 1 "
+  spawnOnce "xinput set-prop \"MSFT0001:00 06CB:7E7E Touchpad\" \"libinput Natural Scrolling Enabled\" 1 "
   -- spawnOnce "monitors"
   spawnOnce "lxsession"
   spawnOnce "picom"
   spawnOnce "nm-applet"
   spawnOnce "volumeicon"
-  spawnOnce "lxsession"
   spawnOnce "caffeine-indicator"
   spawnOnce "nitrogen --restore &"
   spawn "setxkbmap -model pc104 -layout us,gr -option 'grp:win_space_toggle'"
@@ -247,7 +264,7 @@ myStartupHook = do
   -- spawnOnce "discord"
   -- spawnOnce "spotify"
 
-  spawnOnce $ "sleep 1 && monitors"
+  spawnOnce $ "sleep 1 && dm-monitors \"" ++ myDmenuScript ++ "\" extend HDMI1 right"
   spawn $ "sleep 1.5 && trayer --edge top --align right --widthtype request "
     ++ "--SetDockType true --SetPartialStrut true --expand true " 
     ++ "--transparent true --alpha 0 --height 28 --tint 0x"
@@ -281,7 +298,8 @@ myManageHook = insertPosition Below Newer <+> composeAll
   , className =? "discord"                   --> doShift "com"
   -- , className =? "Spotify"                  --> doShift "mus"
 
-  , className =? "Alacritty"                 --> setTransparency 95
+  , className =? "Alacritty"                 --> setTransparency myTransparency
+  , className =? "Gvim"                      --> setTransparency myTransparency
   , className =? "microsoft teams - preview" --> setTransparency 100
   ]
   where

@@ -8,5 +8,7 @@ sudo cp dm-windows /usr/local/bin
 echo "Added dm-windows to /usr/local/bin"
 sudo cp dm-monitors /usr/local/bin
 echo "Added dm-monitors to /usr/local/bin"
+sudo cp dm-brightness /usr/local/bin
+echo "Added dm-brightness to /usr/local/bin"
 sudo cp edit /usr/local/bin
 echo "Added edit to /usr/local/bin"
